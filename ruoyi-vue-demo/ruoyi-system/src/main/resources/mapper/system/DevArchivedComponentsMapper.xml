@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DevArchivedComponentsMapper">
+    
+    <resultMap type="DevArchivedComponents" id="DevArchivedComponentsResult">
+        <result property="id"    column="id"    />
+        <result property="masterEquipmentId"    column="master_equipment_id"    />
+        <result property="componentName"    column="component_name"    />
+        <result property="componentId"    column="component_id"    />
+        <result property="installDate"    column="install_date"    />
+        <result property="maxLifespanDate"    column="max_lifespan_date"    />
+        <result property="warrantyEndDate"    column="warranty_end_date"    />
+        <result property="maintenanceRules"    column="maintenance_rules"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="archiveDate"    column="archive_date"    />
+        <result property="reasonForArchival"    column="reason_for_archival"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectDevArchivedComponentsVo">
+        select id, master_equipment_id, component_name, component_id, install_date, max_lifespan_date, warranty_end_date, maintenance_rules, vendor_name, archive_date, reason_for_archival, remark, create_by, create_time from dev_archived_components
+    </sql>
+
+    <select id="selectDevArchivedComponentsList" parameterType="DevArchivedComponents" resultMap="DevArchivedComponentsResult">
+        <include refid="selectDevArchivedComponentsVo"/>
+        <where>  
+            <if test="masterEquipmentId != null  and masterEquipmentId != ''"> and master_equipment_id = #{masterEquipmentId}</if>
+            <if test="componentName != null  and componentName != ''"> and component_name like concat('%', #{componentName}, '%')</if>
+            <if test="componentId != null  and componentId != ''"> and component_id = #{componentId}</if>
+            <if test="installDate != null "> and install_date = #{installDate}</if>
+            <if test="maxLifespanDate != null "> and max_lifespan_date = #{maxLifespanDate}</if>
+            <if test="warrantyEndDate != null "> and warranty_end_date = #{warrantyEndDate}</if>
+            <if test="maintenanceRules != null  and maintenanceRules != ''"> and maintenance_rules = #{maintenanceRules}</if>
+            <if test="vendorName != null  and vendorName != ''"> and vendor_name like concat('%', #{vendorName}, '%')</if>
+            <if test="archiveDate != null "> and archive_date = #{archiveDate}</if>
+            <if test="reasonForArchival != null  and reasonForArchival != ''"> and reason_for_archival = #{reasonForArchival}</if>
+        </where>
+    </select>
+    
+    <select id="selectDevArchivedComponentsById" parameterType="Long" resultMap="DevArchivedComponentsResult">
+        <include refid="selectDevArchivedComponentsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDevArchivedComponents" parameterType="DevArchivedComponents" useGeneratedKeys="true" keyProperty="id">
+        insert into dev_archived_components
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="masterEquipmentId != null and masterEquipmentId != ''">master_equipment_id,</if>
+            <if test="componentName != null and componentName != ''">component_name,</if>
+            <if test="componentId != null and componentId != ''">component_id,</if>
+            <if test="installDate != null">install_date,</if>
+            <if test="maxLifespanDate != null">max_lifespan_date,</if>
+            <if test="warrantyEndDate != null">warranty_end_date,</if>
+            <if test="maintenanceRules != null">maintenance_rules,</if>
+            <if test="vendorName != null">vendor_name,</if>
+            <if test="archiveDate != null">archive_date,</if>
+            <if test="reasonForArchival != null">reason_for_archival,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="masterEquipmentId != null and masterEquipmentId != ''">#{masterEquipmentId},</if>
+            <if test="componentName != null and componentName != ''">#{componentName},</if>
+            <if test="componentId != null and componentId != ''">#{componentId},</if>
+            <if test="installDate != null">#{installDate},</if>
+            <if test="maxLifespanDate != null">#{maxLifespanDate},</if>
+            <if test="warrantyEndDate != null">#{warrantyEndDate},</if>
+            <if test="maintenanceRules != null">#{maintenanceRules},</if>
+            <if test="vendorName != null">#{vendorName},</if>
+            <if test="archiveDate != null">#{archiveDate},</if>
+            <if test="reasonForArchival != null">#{reasonForArchival},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDevArchivedComponents" parameterType="DevArchivedComponents">
+        update dev_archived_components
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="masterEquipmentId != null and masterEquipmentId != ''">master_equipment_id = #{masterEquipmentId},</if>
+            <if test="componentName != null and componentName != ''">component_name = #{componentName},</if>
+            <if test="componentId != null and componentId != ''">component_id = #{componentId},</if>
+            <if test="installDate != null">install_date = #{installDate},</if>
+            <if test="maxLifespanDate != null">max_lifespan_date = #{maxLifespanDate},</if>
+            <if test="warrantyEndDate != null">warranty_end_date = #{warrantyEndDate},</if>
+            <if test="maintenanceRules != null">maintenance_rules = #{maintenanceRules},</if>
+            <if test="vendorName != null">vendor_name = #{vendorName},</if>
+            <if test="archiveDate != null">archive_date = #{archiveDate},</if>
+            <if test="reasonForArchival != null">reason_for_archival = #{reasonForArchival},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDevArchivedComponentsById" parameterType="Long">
+        delete from dev_archived_components where id = #{id}
+    </delete>
+
+    <delete id="deleteDevArchivedComponentsByIds" parameterType="String">
+        delete from dev_archived_components where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
