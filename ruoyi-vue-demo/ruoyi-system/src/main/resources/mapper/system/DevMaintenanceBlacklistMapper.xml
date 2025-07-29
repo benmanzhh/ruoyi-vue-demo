@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DevMaintenanceBlacklistMapper">
+    
+    <resultMap type="DevMaintenanceBlacklist" id="DevMaintenanceBlacklistResult">
+        <result property="id"    column="id"    />
+        <result property="targetType"    column="target_type"    />
+        <result property="equipmentMasterId"    column="equipment_master_id"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="reason"    column="reason"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDevMaintenanceBlacklistVo">
+        select id, target_type, equipment_master_id, start_date, end_date, reason, remark, create_by, create_time, update_by, update_time from dev_maintenance_blacklist
+    </sql>
+
+    <select id="selectDevMaintenanceBlacklistList" parameterType="DevMaintenanceBlacklist" resultMap="DevMaintenanceBlacklistResult">
+        <include refid="selectDevMaintenanceBlacklistVo"/>
+        <where>  
+            <if test="targetType != null  and targetType != ''"> and target_type = #{targetType}</if>
+            <if test="equipmentMasterId != null "> and equipment_master_id = #{equipmentMasterId}</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="endDate != null "> and end_date = #{endDate}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+        </where>
+    </select>
+    
+    <select id="selectDevMaintenanceBlacklistById" parameterType="Long" resultMap="DevMaintenanceBlacklistResult">
+        <include refid="selectDevMaintenanceBlacklistVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDevMaintenanceBlacklist" parameterType="DevMaintenanceBlacklist" useGeneratedKeys="true" keyProperty="id">
+        insert into dev_maintenance_blacklist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="targetType != null">target_type,</if>
+            <if test="equipmentMasterId != null">equipment_master_id,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="reason != null">reason,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="targetType != null">#{targetType},</if>
+            <if test="equipmentMasterId != null">#{equipmentMasterId},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDevMaintenanceBlacklist" parameterType="DevMaintenanceBlacklist">
+        update dev_maintenance_blacklist
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="targetType != null">target_type = #{targetType},</if>
+            <if test="equipmentMasterId != null">equipment_master_id = #{equipmentMasterId},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDevMaintenanceBlacklistById" parameterType="Long">
+        delete from dev_maintenance_blacklist where id = #{id}
+    </delete>
+
+    <delete id="deleteDevMaintenanceBlacklistByIds" parameterType="String">
+        delete from dev_maintenance_blacklist where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DevVendorsMapper">
+    
+    <resultMap type="DevVendors" id="DevVendorsResult">
+        <result property="id"    column="id"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="contactInfo"    column="contact_info"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDevVendorsVo">
+        select id, vendor_id, vendor_name, contact_info, remark, create_by, create_time, update_by, update_time from dev_vendors
+    </sql>
+
+    <select id="selectDevVendorsList" parameterType="DevVendors" resultMap="DevVendorsResult">
+        <include refid="selectDevVendorsVo"/>
+        <where>  
+            <if test="vendorId != null  and vendorId != ''"> and vendor_id = #{vendorId}</if>
+            <if test="vendorName != null  and vendorName != ''"> and vendor_name like concat('%', #{vendorName}, '%')</if>
+            <if test="contactInfo != null  and contactInfo != ''"> and contact_info = #{contactInfo}</if>
+        </where>
+    </select>
+    
+    <select id="selectDevVendorsById" parameterType="Long" resultMap="DevVendorsResult">
+        <include refid="selectDevVendorsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDevVendors" parameterType="DevVendors" useGeneratedKeys="true" keyProperty="id">
+        insert into dev_vendors
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vendorId != null and vendorId != ''">vendor_id,</if>
+            <if test="vendorName != null and vendorName != ''">vendor_name,</if>
+            <if test="contactInfo != null">contact_info,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vendorId != null and vendorId != ''">#{vendorId},</if>
+            <if test="vendorName != null and vendorName != ''">#{vendorName},</if>
+            <if test="contactInfo != null">#{contactInfo},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDevVendors" parameterType="DevVendors">
+        update dev_vendors
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vendorId != null and vendorId != ''">vendor_id = #{vendorId},</if>
+            <if test="vendorName != null and vendorName != ''">vendor_name = #{vendorName},</if>
+            <if test="contactInfo != null">contact_info = #{contactInfo},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDevVendorsById" parameterType="Long">
+        delete from dev_vendors where id = #{id}
+    </delete>
+
+    <delete id="deleteDevVendorsByIds" parameterType="String">
+        delete from dev_vendors where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

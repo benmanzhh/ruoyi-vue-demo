@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DevEquipmentComponentsMapper">
+    
+    <resultMap type="DevEquipmentComponents" id="DevEquipmentComponentsResult">
+        <result property="id"    column="id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="componentName"    column="component_name"    />
+        <result property="componentId"    column="component_id"    />
+        <result property="status"    column="status"    />
+        <result property="installDate"    column="install_date"    />
+        <result property="lifespanYears"    column="lifespan_years"    />
+        <result property="maxLifespanDate"    column="max_lifespan_date"    />
+        <result property="warrantyYears"    column="warranty_years"    />
+        <result property="warrantyEndDate"    column="warranty_end_date"    />
+        <result property="maintenanceRules"    column="maintenance_rules"    />
+        <result property="rulesFileUrl"    column="rules_file_url"    />
+        <result property="nextMaintenanceDate"    column="next_maintenance_date"    />
+        <result property="personnelId"    column="personnel_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="DevEquipmentComponentsDevPersonnelResult" type="DevEquipmentComponents" extends="DevEquipmentComponentsResult">
+        <collection property="devPersonnelList" ofType="DevPersonnel" column="id" select="selectDevPersonnelList" />
+    </resultMap>
+
+    <resultMap type="DevPersonnel" id="DevPersonnelResult">
+        <result property="id"    column="id"    />
+        <result property="personnelId"    column="personnel_id"    />
+        <result property="name"    column="name"    />
+        <result property="personnelType"    column="personnel_type"    />
+        <result property="certificateInfo"    column="certificate_info"    />
+        <result property="certificatePhotoUrl"    column="certificate_photo_url"    />
+        <result property="certificateExpiryDate"    column="certificate_expiry_date"    />
+        <result property="skillScore"    column="skill_score"    />
+        <result property="permissions"    column="permissions"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDevEquipmentComponentsVo">
+        select id, equipment_id, component_name, component_id, status, install_date, lifespan_years, max_lifespan_date, warranty_years, warranty_end_date, maintenance_rules, rules_file_url, next_maintenance_date, personnel_id, remark, create_by, create_time, update_by, update_time from dev_equipment_components
+    </sql>
+
+    <select id="selectDevEquipmentComponentsList" parameterType="DevEquipmentComponents" resultMap="DevEquipmentComponentsResult">
+        <include refid="selectDevEquipmentComponentsVo"/>
+        <where>  
+            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
+            <if test="componentName != null  and componentName != ''"> and component_name like concat('%', #{componentName}, '%')</if>
+            <if test="componentId != null  and componentId != ''"> and component_id = #{componentId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="installDate != null "> and install_date = #{installDate}</if>
+            <if test="lifespanYears != null "> and lifespan_years = #{lifespanYears}</if>
+            <if test="maxLifespanDate != null "> and max_lifespan_date = #{maxLifespanDate}</if>
+            <if test="warrantyYears != null "> and warranty_years = #{warrantyYears}</if>
+            <if test="warrantyEndDate != null "> and warranty_end_date = #{warrantyEndDate}</if>
+            <if test="maintenanceRules != null  and maintenanceRules != ''"> and maintenance_rules = #{maintenanceRules}</if>
+            <if test="rulesFileUrl != null  and rulesFileUrl != ''"> and rules_file_url = #{rulesFileUrl}</if>
+            <if test="nextMaintenanceDate != null "> and next_maintenance_date = #{nextMaintenanceDate}</if>
+            <if test="personnelId != null "> and personnel_id = #{personnelId}</if>
+        </where>
+    </select>
+    
+    <select id="selectDevEquipmentComponentsById" parameterType="Long" resultMap="DevEquipmentComponentsDevPersonnelResult">
+        select id, equipment_id, component_name, component_id, status, install_date, lifespan_years, max_lifespan_date, warranty_years, warranty_end_date, maintenance_rules, rules_file_url, next_maintenance_date, personnel_id, remark, create_by, create_time, update_by, update_time
+        from dev_equipment_components
+        where id = #{id}
+    </select>
+
+    <select id="selectDevPersonnelList" resultMap="DevPersonnelResult">
+        select id, personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time
+        from dev_personnel
+        where personnel_id = #{personnel_id}
+    </select>
+
+    <insert id="insertDevEquipmentComponents" parameterType="DevEquipmentComponents" useGeneratedKeys="true" keyProperty="id">
+        insert into dev_equipment_components
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="componentName != null and componentName != ''">component_name,</if>
+            <if test="componentId != null and componentId != ''">component_id,</if>
+            <if test="status != null">status,</if>
+            <if test="installDate != null">install_date,</if>
+            <if test="lifespanYears != null">lifespan_years,</if>
+            <if test="maxLifespanDate != null">max_lifespan_date,</if>
+            <if test="warrantyYears != null">warranty_years,</if>
+            <if test="warrantyEndDate != null">warranty_end_date,</if>
+            <if test="maintenanceRules != null">maintenance_rules,</if>
+            <if test="rulesFileUrl != null">rules_file_url,</if>
+            <if test="nextMaintenanceDate != null">next_maintenance_date,</if>
+            <if test="personnelId != null">personnel_id,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="componentName != null and componentName != ''">#{componentName},</if>
+            <if test="componentId != null and componentId != ''">#{componentId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="installDate != null">#{installDate},</if>
+            <if test="lifespanYears != null">#{lifespanYears},</if>
+            <if test="maxLifespanDate != null">#{maxLifespanDate},</if>
+            <if test="warrantyYears != null">#{warrantyYears},</if>
+            <if test="warrantyEndDate != null">#{warrantyEndDate},</if>
+            <if test="maintenanceRules != null">#{maintenanceRules},</if>
+            <if test="rulesFileUrl != null">#{rulesFileUrl},</if>
+            <if test="nextMaintenanceDate != null">#{nextMaintenanceDate},</if>
+            <if test="personnelId != null">#{personnelId},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDevEquipmentComponents" parameterType="DevEquipmentComponents">
+        update dev_equipment_components
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="componentName != null and componentName != ''">component_name = #{componentName},</if>
+            <if test="componentId != null and componentId != ''">component_id = #{componentId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="installDate != null">install_date = #{installDate},</if>
+            <if test="lifespanYears != null">lifespan_years = #{lifespanYears},</if>
+            <if test="maxLifespanDate != null">max_lifespan_date = #{maxLifespanDate},</if>
+            <if test="warrantyYears != null">warranty_years = #{warrantyYears},</if>
+            <if test="warrantyEndDate != null">warranty_end_date = #{warrantyEndDate},</if>
+            <if test="maintenanceRules != null">maintenance_rules = #{maintenanceRules},</if>
+            <if test="rulesFileUrl != null">rules_file_url = #{rulesFileUrl},</if>
+            <if test="nextMaintenanceDate != null">next_maintenance_date = #{nextMaintenanceDate},</if>
+            <if test="personnelId != null">personnel_id = #{personnelId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDevEquipmentComponentsById" parameterType="Long">
+        delete from dev_equipment_components where id = #{id}
+    </delete>
+
+    <delete id="deleteDevEquipmentComponentsByIds" parameterType="String">
+        delete from dev_equipment_components where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteDevPersonnelByPersonnelIds" parameterType="String">
+        delete from dev_personnel where personnel_id in 
+        <foreach item="personnelId" collection="array" open="(" separator="," close=")">
+            #{personnelId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDevPersonnelByPersonnelId" parameterType="Long">
+        delete from dev_personnel where personnel_id = #{personnelId}
+    </delete>
+
+    <insert id="batchDevPersonnel">
+        insert into dev_personnel( id, personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.personnelId}, #{item.name}, #{item.personnelType}, #{item.certificateInfo}, #{item.certificatePhotoUrl}, #{item.certificateExpiryDate}, #{item.skillScore}, #{item.permissions}, #{item.vendorId}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
+        </foreach>
+    </insert>
+</mapper>

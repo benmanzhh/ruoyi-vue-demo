@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DevPersonnelMapper">
+    
+    <resultMap type="DevPersonnel" id="DevPersonnelResult">
+        <result property="id"    column="id"    />
+        <result property="personnelId"    column="personnel_id"    />
+        <result property="name"    column="name"    />
+        <result property="personnelType"    column="personnel_type"    />
+        <result property="certificateInfo"    column="certificate_info"    />
+        <result property="certificatePhotoUrl"    column="certificate_photo_url"    />
+        <result property="certificateExpiryDate"    column="certificate_expiry_date"    />
+        <result property="skillScore"    column="skill_score"    />
+        <result property="permissions"    column="permissions"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="DevPersonnelDevVendorsResult" type="DevPersonnel" extends="DevPersonnelResult">
+        <collection property="devVendorsList" ofType="DevVendors" column="id" select="selectDevVendorsList" />
+    </resultMap>
+
+    <resultMap type="DevVendors" id="DevVendorsResult">
+        <result property="id"    column="id"    />
+        <result property="vendorId"    column="vendor_id"    />
+        <result property="vendorName"    column="vendor_name"    />
+        <result property="contactInfo"    column="contact_info"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDevPersonnelVo">
+        select id, personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time from dev_personnel
+    </sql>
+
+    <select id="selectDevPersonnelList" parameterType="DevPersonnel" resultMap="DevPersonnelResult">
+        <include refid="selectDevPersonnelVo"/>
+        <where>  
+            <if test="personnelId != null  and personnelId != ''"> and personnel_id = #{personnelId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="personnelType != null  and personnelType != ''"> and personnel_type = #{personnelType}</if>
+            <if test="certificateInfo != null  and certificateInfo != ''"> and certificate_info = #{certificateInfo}</if>
+            <if test="certificatePhotoUrl != null  and certificatePhotoUrl != ''"> and certificate_photo_url = #{certificatePhotoUrl}</if>
+            <if test="certificateExpiryDate != null "> and certificate_expiry_date = #{certificateExpiryDate}</if>
+            <if test="skillScore != null "> and skill_score = #{skillScore}</if>
+            <if test="permissions != null  and permissions != ''"> and permissions = #{permissions}</if>
+            <if test="vendorId != null "> and vendor_id = #{vendorId}</if>
+        </where>
+    </select>
+    
+    <select id="selectDevPersonnelById" parameterType="Long" resultMap="DevPersonnelDevVendorsResult">
+        select id, personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time
+        from dev_personnel
+        where id = #{id}
+    </select>
+
+    <select id="selectDevVendorsList" resultMap="DevVendorsResult">
+        select id, vendor_id, vendor_name, contact_info, remark, create_by, create_time, update_by, update_time
+        from dev_vendors
+        where vendor_id = #{vendor_id}
+    </select>
+
+    <insert id="insertDevPersonnel" parameterType="DevPersonnel" useGeneratedKeys="true" keyProperty="id">
+        insert into dev_personnel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="personnelId != null and personnelId != ''">personnel_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="personnelType != null">personnel_type,</if>
+            <if test="certificateInfo != null">certificate_info,</if>
+            <if test="certificatePhotoUrl != null">certificate_photo_url,</if>
+            <if test="certificateExpiryDate != null">certificate_expiry_date,</if>
+            <if test="skillScore != null">skill_score,</if>
+            <if test="permissions != null">permissions,</if>
+            <if test="vendorId != null">vendor_id,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="personnelId != null and personnelId != ''">#{personnelId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="personnelType != null">#{personnelType},</if>
+            <if test="certificateInfo != null">#{certificateInfo},</if>
+            <if test="certificatePhotoUrl != null">#{certificatePhotoUrl},</if>
+            <if test="certificateExpiryDate != null">#{certificateExpiryDate},</if>
+            <if test="skillScore != null">#{skillScore},</if>
+            <if test="permissions != null">#{permissions},</if>
+            <if test="vendorId != null">#{vendorId},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDevPersonnel" parameterType="DevPersonnel">
+        update dev_personnel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="personnelId != null and personnelId != ''">personnel_id = #{personnelId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="personnelType != null">personnel_type = #{personnelType},</if>
+            <if test="certificateInfo != null">certificate_info = #{certificateInfo},</if>
+            <if test="certificatePhotoUrl != null">certificate_photo_url = #{certificatePhotoUrl},</if>
+            <if test="certificateExpiryDate != null">certificate_expiry_date = #{certificateExpiryDate},</if>
+            <if test="skillScore != null">skill_score = #{skillScore},</if>
+            <if test="permissions != null">permissions = #{permissions},</if>
+            <if test="vendorId != null">vendor_id = #{vendorId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDevPersonnelById" parameterType="Long">
+        delete from dev_personnel where id = #{id}
+    </delete>
+
+    <delete id="deleteDevPersonnelByIds" parameterType="String">
+        delete from dev_personnel where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteDevVendorsByVendorIds" parameterType="String">
+        delete from dev_vendors where vendor_id in 
+        <foreach item="vendorId" collection="array" open="(" separator="," close=")">
+            #{vendorId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDevVendorsByVendorId" parameterType="Long">
+        delete from dev_vendors where vendor_id = #{vendorId}
+    </delete>
+
+    <insert id="batchDevVendors">
+        insert into dev_vendors( id, vendor_id, vendor_name, contact_info, remark, create_by, create_time, update_by, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.vendorId}, #{item.vendorName}, #{item.contactInfo}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
+        </foreach>
+    </insert>
+</mapper>
