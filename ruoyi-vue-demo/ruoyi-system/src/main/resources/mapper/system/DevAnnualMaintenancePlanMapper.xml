@@ -4,10 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.DevAnnualMaintenancePlanMapper">
 
-    <!-- =========== Result Map Definitions =========== -->
+    <!-- =================================================================
+         1. Result Map Definitions (结果集映射定义)
+         这是实现“一主多子”数据自动组装的核心。
+    ================================================================== -->
 
+    <!-- 主表及所有子表的统一ResultMap -->
     <resultMap type="DevAnnualMaintenancePlan" id="DevAnnualMaintenancePlanResult">
-        <!-- 主表字段映射 -->
+        <!-- 主表字段映射 (使用<id>标签映射主键) -->
         <id     property="planId"      column="plan_id"      />
         <result property="targetType"    column="target_type"    />
         <result property="componentId"   column="component_id"   />
@@ -43,6 +47,7 @@
     <!-- 子表2: 设备归档历史 ResultMap -->
     <resultMap type="DevArchivedComponents" id="DevArchivedComponentsResult">
         <id     property="id"                column="sub_archive_id"         />
+        <result property="planId"            column="sub_archive_plan_id"    />
         <result property="componentId"       column="sub_archive_component_id" />
         <result property="masterEquipmentId" column="master_equipment_id"    />
         <result property="componentName"     column="component_name"         />
@@ -57,19 +62,24 @@
         <result property="remark"            column="sub_archive_remark"     />
     </resultMap>
 
-    <!-- =========== Reusable SQL Snippets =========== -->
+    <!-- =================================================================
+         2. Reusable SQL Snippets (可复用SQL片段)
+    ================================================================== -->
 
     <sql id="selectDevAnnualMaintenancePlanVo">
         SELECT
         p.plan_id, p.target_type, p.component_id, p.year, p.scheduled_date, p.status, p.assigned_personnel_id, p.remark, p.create_by, p.create_time, p.update_by, p.update_time,
         d.id as sub_detail_id, d.plan_id as sub_detail_plan_id, d.completion_date, d.fault_description, d.actions_taken, d.parts_replaced, d.report_url, d.remark as sub_detail_remark,
-        a.id as sub_archive_id, a.component_id as sub_archive_component_id, a.master_equipment_id, a.component_name, a.component_id_str, a.install_date, a.max_lifespan_date, a.warranty_end_date, a.maintenance_rules, a.vendor_name, a.archive_date, a.reason_for_archival, a.remark as sub_archive_remark
+        a.id as sub_archive_id, a.plan_id as sub_archive_plan_id, a.component_id as sub_archive_component_id, a.master_equipment_id, a.component_name, a.component_id_str, a.install_date, a.max_lifespan_date, a.warranty_end_date, a.maintenance_rules, a.vendor_name, a.archive_date, a.reason_for_archival, a.remark as sub_archive_remark
         FROM dev_annual_maintenance_plan p
         LEFT JOIN dev_work_completion_details d ON p.plan_id = d.plan_id
-        LEFT JOIN dev_archived_components a ON p.component_id = a.component_id
+        <!-- 核心修正：将关联键从 component_id 改为 plan_id -->
+        LEFT JOIN dev_archived_components a ON p.plan_id = a.plan_id
     </sql>
 
-    <!-- =========== Main Table Operations =========== -->
+    <!-- =================================================================
+         3. Main Table Operations (主表操作)
+    ================================================================== -->
 
     <select id="selectDevAnnualMaintenancePlanList" parameterType="DevAnnualMaintenancePlan" resultMap="DevAnnualMaintenancePlanResult">
         <include refid="selectDevAnnualMaintenancePlanVo"/>
@@ -141,7 +151,9 @@
         </foreach>
     </delete>
 
-    <!-- =========== Sub-Table 1: Completion Details Operations =========== -->
+    <!-- =================================================================
+         4. Sub-Table 1 Operations (子表1: 完成情况 操作)
+    ================================================================== -->
 
     <delete id="deleteDevWorkCompletionDetailsByPlanId" parameterType="Long">
         DELETE FROM dev_work_completion_details WHERE plan_id = #{planId}
@@ -161,7 +173,9 @@
         </foreach>
     </insert>
 
-    <!-- =========== Sub-Table 2: Archived Components Operations =========== -->
+    <!-- =================================================================
+         5. Sub-Table 2 Operations (子表2: 归档历史 操作)
+    ================================================================== -->
 
     <delete id="deleteDevArchivedComponentsByPlanId" parameterType="Long">
         DELETE FROM dev_archived_components WHERE plan_id = #{planId}

@@ -81,6 +81,9 @@ public class DevEquipmentComponents extends BaseEntity
     /** 维护人员信息列表 (Added to fix ReflectionException) */
     private List<DevPersonnel> devPersonnelList;
 
+    /** 年度作业计划列表 (新增) */
+    private List<DevAnnualMaintenancePlan> devAnnualMaintenancePlanList;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -220,6 +223,19 @@ public class DevEquipmentComponents extends BaseEntity
     {
         this.devPersonnelList = devPersonnelList;
     }
+
+    /**
+     * Getter and Setter for devAnnualMaintenancePlanList (新增)
+     */
+    public List<DevAnnualMaintenancePlan> getDevAnnualMaintenancePlanList()
+    {
+        return devAnnualMaintenancePlanList;
+    }
+
+    public void setDevAnnualMaintenancePlanList(List<DevAnnualMaintenancePlan> devAnnualMaintenancePlanList)
+    {
+        this.devAnnualMaintenancePlanList = devAnnualMaintenancePlanList;
+    }
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -243,6 +259,7 @@ public class DevEquipmentComponents extends BaseEntity
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
                 .append("devPersonnelList", getDevPersonnelList())
+                .append("devAnnualMaintenancePlanList", getDevAnnualMaintenancePlanList())
                 .toString();
     }
 }

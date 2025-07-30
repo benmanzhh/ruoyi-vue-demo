@@ -1,6 +1,8 @@
 package com.ruoyi.system.mapper;
 
 import java.util.List;
+
+import com.ruoyi.system.domain.DevAnnualMaintenancePlan;
 import com.ruoyi.system.domain.DevEquipmentComponents;
 import com.ruoyi.system.domain.DevPersonnel;
 
@@ -12,6 +14,25 @@ import com.ruoyi.system.domain.DevPersonnel;
  */
 public interface DevEquipmentComponentsMapper 
 {
+    /**
+     * 批量新增年度作业计划 (新增)
+     */
+    public int batchDevAnnualMaintenancePlan(List<DevAnnualMaintenancePlan> devAnnualMaintenancePlanList);
+
+    /**
+     * 通过设备部件主键删除年度作业计划信息 (新增)
+     */
+    public int deleteDevAnnualMaintenancePlanByComponentId(Long id);
+
+    /*
+
+    /**
+     * 根据部件ID批量删除年度作业计划
+     * * @param ids 需要删除的设备部件主键集合
+     * @return 结果
+     */
+    public int deleteDevAnnualMaintenancePlanByComponentIds(Long[] ids);
+
     /**
      * 查询设备部件
      * 
