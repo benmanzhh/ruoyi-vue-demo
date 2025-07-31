@@ -105,6 +105,10 @@
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
+            <!-- 核心修正: 增加对自动计算日期的插入 -->
+            <if test="maxLifespanDate != null">max_lifespan_date,</if>
+            <if test="warrantyEndDate != null">warranty_end_date,</if>
+
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="equipmentId != null">#{equipmentId},</if>
@@ -125,6 +129,10 @@
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <!-- 核心修正: 增加对自动计算日期的值 -->
+            <if test="maxLifespanDate != null">#{maxLifespanDate},</if>
+            <if test="warrantyEndDate != null">#{warrantyEndDate},</if>
+
         </trim>
     </insert>
 
@@ -149,6 +157,10 @@
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <!-- 核心修正: 增加对自动计算日期的更新 -->
+            <if test="maxLifespanDate != null">max_lifespan_date = #{maxLifespanDate},</if>
+            <if test="warrantyEndDate != null">warranty_end_date = #{warrantyEndDate},</if>
+
         </trim>
         where id = #{id}
     </update>
