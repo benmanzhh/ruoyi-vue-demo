@@ -106,12 +106,20 @@ public class DevAnnualMaintenancePlanServiceImpl implements IDevAnnualMaintenanc
     {
         List<DevArchivedComponents> devArchivedComponentsList = devAnnualMaintenancePlan.getDevArchivedComponentsList();
         Long planId = devAnnualMaintenancePlan.getPlanId();
+
+        // 核心修正: 从主表对象中获取 componentId
+        Long componentId = devAnnualMaintenancePlan.getComponentId();
+
         if (StringUtils.isNotNull(devArchivedComponentsList))
         {
             List<DevArchivedComponents> list = new ArrayList<DevArchivedComponents>();
             for (DevArchivedComponents devArchivedComponents : devArchivedComponentsList)
             {
                 devArchivedComponents.setPlanId(planId);
+                // 核心修正: 将主表中的 componentId 设置到子表对象中
+                devArchivedComponents.setComponentId(componentId);
+
+
                 list.add(devArchivedComponents);
             }
             if (list.size() > 0)
