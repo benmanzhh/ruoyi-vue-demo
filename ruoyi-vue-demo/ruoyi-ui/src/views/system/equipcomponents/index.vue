@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- 1. 优化并补全搜索栏 -->
+    <!-- 搜索表单 -->
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
       <el-form-item label="所属设备ID" prop="equipmentId">
         <el-input
@@ -42,6 +42,14 @@
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="请选择投入时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="实际维护时间" prop="actualMaintenanceDate">
+        <el-date-picker clearable
+          v-model="queryParams.actualMaintenanceDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="请选择实际维护时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="维护人员ID" prop="personnelId">
@@ -105,7 +113,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <!-- 2. 优化并补全主表 -->
+    <!-- 主表表格 -->
     <el-table v-loading="loading" :data="equipcomponentsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="部件主键ID" align="center" prop="id" width="100"/>
@@ -135,6 +143,16 @@
         </template>
       </el-table-column>
       <el-table-column label="维修规范" align="center" prop="maintenanceRules" width="150" :show-overflow-tooltip="true"/>
+      <el-table-column label="下一次计划维护时间" align="center" prop="nextMaintenanceDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.nextMaintenanceDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="实际维护时间" align="center" prop="actualMaintenanceDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.actualMaintenanceDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="维护人员ID" align="center" prop="personnelId" width="110"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120">
         <template slot-scope="scope">
@@ -164,7 +182,7 @@
       @pagination="getList"
     />
 
-    <!-- 3. 优化并补全添加或修改设备部件对话框 -->
+    <!-- 添加或修改设备部件对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <!-- 主表字段 -->
@@ -250,8 +268,25 @@
                 v-model="form.nextMaintenanceDate"
                 type="date"
                 value-format="yyyy-MM-dd"
-                placeholder="请选择下一次计划维护时间">
+                placeholder="请选择">
               </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+             <el-form-item label="实际维护时间" prop="actualMaintenanceDate">
+              <el-date-picker clearable style="width: 100%"
+                v-model="form.actualMaintenanceDate"
+                type="date"
+                value-format="yyyy-MM-dd"
+                placeholder="请选择">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="维护人员(员工id)" prop="personnelId">
+              <el-input v-model="form.personnelId" placeholder="请输入维护人员(员工id)" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -262,21 +297,78 @@
                 </el-form-item>
             </el-col>
         </el-row>
-        <el-row>
-            <el-col :span="12">
-                <el-form-item label="维护人员(员工id)" prop="personnelId">
-                  <el-input v-model="form.personnelId" placeholder="请输入维护人员(员工id)" />
-                </el-form-item>
-            </el-col>
-        </el-row>
 
         <!-- 子表区域 -->
         <el-tabs v-model="activeName">
           <el-tab-pane label="维护人员信息" name="personnel">
-            <!-- ... 人员信息子表内容 ... -->
+            <el-table :data="form.devPersonnelList" ref="devPersonnelTable" :row-class-name="rowClassName">
+              <el-table-column label="序号" align="center" prop="index" width="50"/>
+              <el-table-column label="姓名" prop="name" width="150">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.name" placeholder="请输入姓名" />
+                </template>
+              </el-table-column>
+              <el-table-column label="人员属性" prop="personnelType" width="180">
+                <template slot-scope="scope">
+                  <el-select v-model="scope.row.personnelType" placeholder="请选择人员属性">
+                    <el-option
+                      v-for="dict in dict.type.dev_personnel_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDeleteDevPersonnel(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div style="margin-top: 10px;">
+              <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddDevPersonnel">添加人员</el-button>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="年度作业计划" name="maintenancePlan">
-            <!-- ... 年度作业计划子表内容 ... -->
+            <el-table :data="form.devAnnualMaintenancePlanList" ref="devAnnualPlanTable" :row-class-name="rowClassName">
+              <el-table-column label="序号" align="center" prop="index" width="50"/>
+              <el-table-column label="计划年份" prop="year" width="150">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.year" placeholder="请输入年份" />
+                </template>
+              </el-table-column>
+              <el-table-column label="计划日期" prop="scheduledDate" width="240">
+                <template slot-scope="scope">
+                  <el-date-picker clearable v-model="scope.row.scheduledDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择计划日期" />
+                </template>
+              </el-table-column>
+              <el-table-column label="计划状态" prop="status" width="180">
+                <template slot-scope="scope">
+                  <el-select v-model="scope.row.status" placeholder="请选择状态">
+                    <el-option
+                      v-for="dict in dict.type.dev_status"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+                    ></el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="备注" prop="remark">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.remark" placeholder="请输入备注" />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDeleteDevAnnualPlan(scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+             <div style="margin-top: 10px;">
+              <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddDevAnnualPlan">添加计划</el-button>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -314,6 +406,7 @@ export default {
         componentId: null,
         status: null,
         installDate: null,
+        actualMaintenanceDate: null,
         personnelId: null,
       },
       form: {},
@@ -361,6 +454,7 @@ export default {
         maintenanceRules: null,
         rulesFileUrl: null,
         nextMaintenanceDate: null,
+        actualMaintenanceDate: null,
         personnelId: null,
         remark: null,
         createBy: null,

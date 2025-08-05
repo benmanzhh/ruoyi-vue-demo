@@ -19,6 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="maintenanceRules"    column="maintenance_rules"    />
         <result property="rulesFileUrl"    column="rules_file_url"    />
         <result property="nextMaintenanceDate"    column="next_maintenance_date"    />
+        <result property="actualMaintenanceDate"  column="actual_maintenance_date"  /> <!-- (新增) -->
         <result property="maintainerId"    column="maintainer_id"    />
         <result property="remark"    column="remark"    />
         <result property="createBy"    column="create_by"    />
@@ -54,7 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDevEquipmentMasterVo">
-        select id, category, equipment_name, equipment_id, building_no, location, install_date, lifespan_years, max_lifespan_date, warranty_years, warranty_end_date, maintenance_rules, rules_file_url, next_maintenance_date, maintainer_id, remark, create_by, create_time, update_by, update_time from dev_equipment_master
+        select id, category, equipment_name, equipment_id, building_no, location, install_date, lifespan_years, max_lifespan_date, warranty_years, warranty_end_date, maintenance_rules, rules_file_url, next_maintenance_date, actual_maintenance_date, maintainer_id, remark, create_by, create_time, update_by, update_time from dev_equipment_master
     </sql>
 
     <select id="selectDevEquipmentMasterList" parameterType="DevEquipmentMaster" resultMap="DevEquipmentMasterResult">
@@ -105,6 +106,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maintenanceRules != null">maintenance_rules,</if>
             <if test="rulesFileUrl != null">rules_file_url,</if>
             <if test="nextMaintenanceDate != null">next_maintenance_date,</if>
+            <if test="actualMaintenanceDate != null">actual_maintenance_date,</if> <!-- (新增) -->
             <if test="maintainerId != null">maintainer_id,</if>
             <if test="remark != null">remark,</if>
             <if test="createBy != null">create_by,</if>
@@ -126,6 +128,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maintenanceRules != null">#{maintenanceRules},</if>
             <if test="rulesFileUrl != null">#{rulesFileUrl},</if>
             <if test="nextMaintenanceDate != null">#{nextMaintenanceDate},</if>
+            <if test="actualMaintenanceDate != null">#{actualMaintenanceDate},</if> <!-- (新增) -->
             <if test="maintainerId != null">#{maintainerId},</if>
             <if test="remark != null">#{remark},</if>
             <if test="createBy != null">#{createBy},</if>
@@ -151,6 +154,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maintenanceRules != null">maintenance_rules = #{maintenanceRules},</if>
             <if test="rulesFileUrl != null">rules_file_url = #{rulesFileUrl},</if>
             <if test="nextMaintenanceDate != null">next_maintenance_date = #{nextMaintenanceDate},</if>
+            <if test="actualMaintenanceDate != null">actual_maintenance_date = #{actualMaintenanceDate},</if> <!-- (新增) -->
             <if test="maintainerId != null">maintainer_id = #{maintainerId},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="createBy != null">create_by = #{createBy},</if>

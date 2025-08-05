@@ -220,7 +220,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -312,6 +312,17 @@
             placeholder="请选择下一次计划维护时间">
           </el-date-picker>
         </el-form-item>
+
+         <!-- (新增) 搜索项 -->
+              <el-form-item label="实际维护时间" prop="actualMaintenanceDate">
+                <el-date-picker clearable
+                  v-model="queryParams.actualMaintenanceDate"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="请选择">
+                </el-date-picker>
+              </el-form-item>
+
         <el-form-item label="维护人员ID" prop="maintainerId">
           <el-input v-model="form.maintainerId" placeholder="请输入维护人员ID" />
         </el-form-item>
@@ -382,6 +393,14 @@
               <el-date-picker clearable v-model="scope.row.nextMaintenanceDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择下一次计划维护时间" />
             </template>
           </el-table-column>
+
+          <!-- (新增) 表格列 -->
+                <el-table-column label="实际维护时间" align="center" prop="actualMaintenanceDate" width="180">
+                  <template slot-scope="scope">
+                    <span>{{ parseTime(scope.row.actualMaintenanceDate, '{y}-{m}-{d}') }}</span>
+                  </template>
+                </el-table-column>
+
           <el-table-column label="维护人员(员工id)" prop="personnelId" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.personnelId" placeholder="请输入维护人员(员工id)" />
@@ -444,6 +463,7 @@ export default {
         maintenanceRules: null,
         rulesFileUrl: null,
         nextMaintenanceDate: null,
+        actualMaintenanceDate: null,
         maintainerId: null,
       },
       // 表单参数

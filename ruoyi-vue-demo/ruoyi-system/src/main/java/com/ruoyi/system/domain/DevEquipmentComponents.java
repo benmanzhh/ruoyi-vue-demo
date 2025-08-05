@@ -74,6 +74,11 @@ public class DevEquipmentComponents extends BaseEntity
     @Excel(name = "下一次计划维护时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date nextMaintenanceDate;
 
+    /** 实际维护时间 (新增) */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "实际维护时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date actualMaintenanceDate;
+
     /** 维护人员(员工id) */
     @Excel(name = "维护人员(员工id)")
     private Long personnelId;
@@ -201,7 +206,18 @@ public class DevEquipmentComponents extends BaseEntity
     {
         return nextMaintenanceDate;
     }
-    public void setPersonnelId(Long personnelId) 
+
+    // (新增)
+    public void setActualMaintenanceDate(Date actualMaintenanceDate)
+    {
+        this.actualMaintenanceDate = actualMaintenanceDate;
+    }
+
+    public Date getActualMaintenanceDate()
+    {
+        return actualMaintenanceDate;
+    }
+    public void setPersonnelId(Long personnelId)
     {
         this.personnelId = personnelId;
     }
@@ -252,7 +268,8 @@ public class DevEquipmentComponents extends BaseEntity
             .append("maintenanceRules", getMaintenanceRules())
             .append("rulesFileUrl", getRulesFileUrl())
             .append("nextMaintenanceDate", getNextMaintenanceDate())
-            .append("personnelId", getPersonnelId())
+                .append("actualMaintenanceDate", getActualMaintenanceDate()) // (新增)
+                .append("personnelId", getPersonnelId())
             .append("remark", getRemark())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

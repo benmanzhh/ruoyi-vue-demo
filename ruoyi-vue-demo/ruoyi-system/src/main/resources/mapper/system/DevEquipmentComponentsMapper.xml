@@ -22,6 +22,7 @@
         <result property="maintenanceRules"    column="maintenance_rules"    />
         <result property="rulesFileUrl"    column="rules_file_url"    />
         <result property="nextMaintenanceDate"    column="next_maintenance_date"    />
+        <result property="actualMaintenanceDate"  column="actual_maintenance_date"  /> <!-- (新增) -->
         <result property="personnelId"    column="personnel_id"    />
         <result property="remark"    column="remark"    />
         <result property="createBy"    column="create_by"    />
@@ -61,9 +62,8 @@
     <!-- 优化 #2: 创建一个包含所有JOIN查询的SQL片段，并使用别名避免列名冲突 -->
     <sql id="selectComponentsWithSubTablesVo">
         SELECT
-        c.id as component_id, c.equipment_id, c.component_name, c.component_id as component_business_id, c.status, c.install_date, c.lifespan_years, c.max_lifespan_date, c.warranty_years, c.warranty_end_date, c.maintenance_rules, c.rules_file_url, c.next_maintenance_date, c.personnel_id, c.remark, c.create_by, c.create_time, c.update_by, c.update_time,
+        c.id as component_id, c.equipment_id, c.component_name, c.component_id as component_business_id, c.status, c.install_date, c.lifespan_years, c.max_lifespan_date, c.warranty_years, c.warranty_end_date, c.maintenance_rules, c.rules_file_url, c.next_maintenance_date, c.actual_maintenance_date, c.personnel_id, c.remark, c.create_by, c.create_time, c.update_by, c.update_time,
         p.id as personnel_pk_id, p.personnel_id as personnel_business_id, p.name as personnel_name,
-        <!-- 核心修正: 将 plan.id 改为 plan.plan_id -->
         plan.plan_id as plan_pk_id, plan.component_id as plan_component_id, plan.year as plan_year, plan.scheduled_date as plan_scheduled_date, plan.status as plan_status
         FROM dev_equipment_components c
         LEFT JOIN dev_personnel p ON c.personnel_id = p.id
@@ -99,6 +99,7 @@
             <if test="maintenanceRules != null">maintenance_rules,</if>
             <if test="rulesFileUrl != null">rules_file_url,</if>
             <if test="nextMaintenanceDate != null">next_maintenance_date,</if>
+            <if test="actualMaintenanceDate != null">actual_maintenance_date,</if> <!-- (新增) -->
             <if test="personnelId != null">personnel_id,</if>
             <if test="remark != null">remark,</if>
             <if test="createBy != null">create_by,</if>
@@ -123,6 +124,7 @@
             <if test="maintenanceRules != null">#{maintenanceRules},</if>
             <if test="rulesFileUrl != null">#{rulesFileUrl},</if>
             <if test="nextMaintenanceDate != null">#{nextMaintenanceDate},</if>
+            <if test="actualMaintenanceDate != null">#{actualMaintenanceDate},</if> <!-- (新增) -->
             <if test="personnelId != null">#{personnelId},</if>
             <if test="remark != null">#{remark},</if>
             <if test="createBy != null">#{createBy},</if>
@@ -151,6 +153,7 @@
             <if test="maintenanceRules != null">maintenance_rules = #{maintenanceRules},</if>
             <if test="rulesFileUrl != null">rules_file_url = #{rulesFileUrl},</if>
             <if test="nextMaintenanceDate != null">next_maintenance_date = #{nextMaintenanceDate},</if>
+            <if test="actualMaintenanceDate != null">actual_maintenance_date = #{actualMaintenanceDate},</if> <!-- (新增) -->
             <if test="personnelId != null">personnel_id = #{personnelId},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
