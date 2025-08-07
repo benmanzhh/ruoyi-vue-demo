@@ -93,4 +93,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectBlacklistByReasons" resultMap="DevMaintenanceBlacklistResult">
+        SELECT id, reason FROM dev_maintenance_blacklist
+        WHERE reason IN
+        <foreach item="reason" collection="reasons" open="(" separator="," close=")">
+            #{reason}
+        </foreach>
+    </select>
+
 </mapper>

@@ -58,4 +58,13 @@ public interface IDevMaintenanceBlacklistService
      * @return 结果
      */
     public int deleteDevMaintenanceBlacklistById(Long id);
+
+
+    /**
+     * 根据原因列表查询黑名单
+     *
+     * @param reasons 原因列表
+     * @return 维护作业黑名单集合
+     */
+    public List<DevMaintenanceBlacklist> selectBlacklistByReasons(List<String> reasons);
 }

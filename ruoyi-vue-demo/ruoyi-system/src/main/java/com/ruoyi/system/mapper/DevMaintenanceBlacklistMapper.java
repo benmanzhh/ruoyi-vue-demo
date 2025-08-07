@@ -2,6 +2,7 @@ package com.ruoyi.system.mapper;
 
 import java.util.List;
 import com.ruoyi.system.domain.DevMaintenanceBlacklist;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 维护作业黑名单Mapper接口
@@ -58,4 +59,13 @@ public interface DevMaintenanceBlacklistMapper
      * @return 结果
      */
     public int deleteDevMaintenanceBlacklistByIds(Long[] ids);
+
+    /**
+     * 根据原因列表查询黑名单
+     *
+     * @param reasons 原因列表
+     * @return 维护作业黑名单集合
+     */
+    public List<DevMaintenanceBlacklist> selectBlacklistByReasons(@Param("reasons") List<String> reasons);
+
 }

@@ -93,4 +93,16 @@ public class DevMaintenanceBlacklistServiceImpl implements IDevMaintenanceBlackl
     {
         return devMaintenanceBlacklistMapper.deleteDevMaintenanceBlacklistById(id);
     }
+
+    /**
+     * 根据原因列表查询黑名单
+     *
+     * @param reasons 原因列表
+     * @return 维护作业黑名单集合
+     */
+    @Override
+    public List<DevMaintenanceBlacklist> selectBlacklistByReasons(List<String> reasons)
+    {
+        return devMaintenanceBlacklistMapper.selectBlacklistByReasons(reasons);
+    }
 }

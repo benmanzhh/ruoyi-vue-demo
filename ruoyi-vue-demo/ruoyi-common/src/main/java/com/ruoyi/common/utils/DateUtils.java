@@ -188,4 +188,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
+    /**
+     * 将 LocalDate 转为 Date
+     * @param localDate a LocalDate object
+     * @return a Date object
+     */
+    public static Date localDateToDate(java.time.LocalDate localDate)
+    {
+        if (localDate == null) {
+            return null;
+        }
+        return java.util.Date.from(localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+    }
 }
