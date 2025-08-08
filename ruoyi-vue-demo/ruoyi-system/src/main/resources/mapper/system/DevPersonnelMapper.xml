@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="personnelId"    column="personnel_id"    />
         <result property="name"    column="name"    />
+        <result property="contactInfo"    column="contact_info"    /> <!-- (新增) -->
         <result property="personnelType"    column="personnel_type"    />
         <result property="certificateInfo"    column="certificate_info"    />
         <result property="certificatePhotoUrl"    column="certificate_photo_url"    />
@@ -39,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDevPersonnelVo">
-        select id, personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time from dev_personnel
+        select id, personnel_id, name,contact_info, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time from dev_personnel
     </sql>
 
     <select id="selectDevPersonnelList" parameterType="DevPersonnel" resultMap="DevPersonnelResult">
@@ -47,6 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="personnelId != null  and personnelId != ''"> and personnel_id = #{personnelId}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="contactInfo != null and contactInfo != ''">contact_info,</if> <!-- (新增) -->
             <if test="personnelType != null  and personnelType != ''"> and personnel_type = #{personnelType}</if>
             <if test="certificateInfo != null  and certificateInfo != ''"> and certificate_info = #{certificateInfo}</if>
             <if test="certificatePhotoUrl != null  and certificatePhotoUrl != ''"> and certificate_photo_url = #{certificatePhotoUrl}</if>
@@ -58,7 +60,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="selectDevPersonnelById" parameterType="Long" resultMap="DevPersonnelDevVendorsResult">
-        select id, personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time
+        select id, personnel_id, name, contact_info,personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time, update_by, update_time
         from dev_personnel
         where id = #{id}
     </select>
@@ -74,6 +76,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="personnelId != null and personnelId != ''">personnel_id,</if>
             <if test="name != null and name != ''">name,</if>
+            <if test="contactInfo != null and contactInfo != ''">contact_info,</if> <!-- (新增) -->
             <if test="personnelType != null">personnel_type,</if>
             <if test="certificateInfo != null">certificate_info,</if>
             <if test="certificatePhotoUrl != null">certificate_photo_url,</if>
@@ -90,6 +93,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="personnelId != null and personnelId != ''">#{personnelId},</if>
             <if test="name != null and name != ''">#{name},</if>
+            <if test="contactInfo != null and contactInfo != ''">#{contactInfo},</if> <!-- (新增) -->
             <if test="personnelType != null">#{personnelType},</if>
             <if test="certificateInfo != null">#{certificateInfo},</if>
             <if test="certificatePhotoUrl != null">#{certificatePhotoUrl},</if>
@@ -110,6 +114,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="personnelId != null and personnelId != ''">personnel_id = #{personnelId},</if>
             <if test="name != null and name != ''">name = #{name},</if>
+            <if test="contactInfo != null and contactInfo != ''">contact_info = #{contactInfo},</if> <!-- (新增) -->
             <if test="personnelType != null">personnel_type = #{personnelType},</if>
             <if test="certificateInfo != null">certificate_info = #{certificateInfo},</if>
             <if test="certificatePhotoUrl != null">certificate_photo_url = #{certificatePhotoUrl},</if>
@@ -154,4 +159,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ( #{item.id}, #{item.vendorId}, #{item.vendorName}, #{item.contactInfo}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
         </foreach>
     </insert>
+
 </mapper>

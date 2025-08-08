@@ -308,6 +308,11 @@
                   <el-input v-model="scope.row.name" placeholder="请输入姓名" />
                 </template>
               </el-table-column>
+              <el-table-column label="员工联系方式" prop="contactInfo" width="180">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.contactInfo" placeholder="请输入联系方式" />
+                </template>
+              </el-table-column>
               <el-table-column label="人员属性" prop="personnelType" width="180">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.personnelType" placeholder="请选择人员属性">
@@ -541,6 +546,7 @@ export default {
       }
       this.form.devPersonnelList.push({
         name: "",
+        contactInfo: "", // (新增) 初始化新字段
         personnelType: null,
       });
     },

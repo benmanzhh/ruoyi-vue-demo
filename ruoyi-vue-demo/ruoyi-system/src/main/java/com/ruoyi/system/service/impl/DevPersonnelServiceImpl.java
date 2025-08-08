@@ -116,13 +116,14 @@ public class DevPersonnelServiceImpl implements IDevPersonnelService
     public void insertDevVendors(DevPersonnel devPersonnel)
     {
         List<DevVendors> devVendorsList = devPersonnel.getDevVendorsList();
-        Long id = devPersonnel.getId();
+        // 核心修正 #1: 从主表对象中获取正确的 vendorId
+        Long vendorIdFromMaster = devPersonnel.getVendorId();
         if (StringUtils.isNotNull(devVendorsList))
         {
             List<DevVendors> list = new ArrayList<DevVendors>();
             for (DevVendors devVendors : devVendorsList)
             {
-                devVendors.setVendorId(id);
+                devVendors.setVendorId(vendorIdFromMaster);
                 list.add(devVendors);
             }
             if (list.size() > 0)

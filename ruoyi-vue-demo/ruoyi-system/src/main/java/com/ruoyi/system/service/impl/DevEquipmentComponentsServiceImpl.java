@@ -96,15 +96,20 @@ public class DevEquipmentComponentsServiceImpl implements IDevEquipmentComponent
     public void insertDevPersonnel(DevEquipmentComponents devEquipmentComponents)
     {
         List<DevPersonnel> devPersonnelList = devEquipmentComponents.getDevPersonnelList();
+        Long componentId = devEquipmentComponents.getId();
+        // 核心修正: 获取主表中填写的 personnelId (类型为Long)
+        Long personnelIdFromMaster = devEquipmentComponents.getPersonnelId();
+
+
         if (StringUtils.isNotNull(devPersonnelList))
         {
             List<DevPersonnel> list = new ArrayList<>();
             for (DevPersonnel devPersonnel : devPersonnelList)
             {
-                // 核心修正: 检查personnelId是否为空，如果为空则生成一个UUID
-                if (StringUtils.isEmpty(devPersonnel.getPersonnelId()))
-                {
-                    devPersonnel.setPersonnelId(UUID.randomUUID().toString());
+                // 核心修正: 将主表中填写的 personnelId (Long)
+                // 直接设置到子表对象的 personnelId 字段中
+                if (personnelIdFromMaster != null) {
+                    devPersonnel.setPersonnelId(personnelIdFromMaster);
                 }
                 list.add(devPersonnel);
             }
@@ -121,13 +126,16 @@ public class DevEquipmentComponentsServiceImpl implements IDevEquipmentComponent
     public void insertDevAnnualMaintenancePlan(DevEquipmentComponents devEquipmentComponents)
     {
         List<DevAnnualMaintenancePlan> devAnnualMaintenancePlanList = devEquipmentComponents.getDevAnnualMaintenancePlanList();
-        Long componentId = devEquipmentComponents.getId();
+
+        String componentId = devEquipmentComponents.getComponentId();
+
         if (StringUtils.isNotNull(devAnnualMaintenancePlanList))
         {
             List<DevAnnualMaintenancePlan> list = new ArrayList<>();
             for (DevAnnualMaintenancePlan plan : devAnnualMaintenancePlanList)
             {
-                plan.setComponentId(componentId);
+                plan.setComponentId(Long.valueOf(componentId));
+
                 list.add(plan);
             }
             if (list.size() > 0)

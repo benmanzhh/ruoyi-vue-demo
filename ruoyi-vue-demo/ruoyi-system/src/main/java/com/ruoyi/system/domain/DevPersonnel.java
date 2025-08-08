@@ -25,11 +25,16 @@ public class DevPersonnel extends BaseEntity
 
     /** 员工ID */
     @Excel(name = "员工ID")
-    private String personnelId;
+    private Long personnelId;
 
     /** 姓名 */
     @Excel(name = "姓名")
     private String name;
+
+
+    /** 员工联系方式 (新增) */
+    @Excel(name = "员工联系方式")
+    private String contactInfo;
 
     /** 人员属性 */
     @Excel(name = "人员属性")
@@ -71,12 +76,12 @@ public class DevPersonnel extends BaseEntity
     {
         return id;
     }
-    public void setPersonnelId(String personnelId) 
+    public void setPersonnelId(Long personnelId)
     {
         this.personnelId = personnelId;
     }
 
-    public String getPersonnelId() 
+    public Long getPersonnelId()
     {
         return personnelId;
     }
@@ -89,7 +94,18 @@ public class DevPersonnel extends BaseEntity
     {
         return name;
     }
-    public void setPersonnelType(String personnelType) 
+    // (新增)
+    public void setContactInfo(String contactInfo)
+    {
+        this.contactInfo = contactInfo;
+    }
+
+    public String getContactInfo()
+    {
+        return contactInfo;
+    }
+
+    public void setPersonnelType(String personnelType)
     {
         this.personnelType = personnelType;
     }
@@ -173,7 +189,8 @@ public class DevPersonnel extends BaseEntity
             .append("id", getId())
             .append("personnelId", getPersonnelId())
             .append("name", getName())
-            .append("personnelType", getPersonnelType())
+                .append("contactInfo", getContactInfo()) // (新增)
+                .append("personnelType", getPersonnelType())
             .append("certificateInfo", getCertificateInfo())
             .append("certificatePhotoUrl", getCertificatePhotoUrl())
             .append("certificateExpiryDate", getCertificateExpiryDate())

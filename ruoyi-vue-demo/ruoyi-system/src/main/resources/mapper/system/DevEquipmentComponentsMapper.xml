@@ -4,31 +4,34 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.DevEquipmentComponentsMapper">
 
-    <!-- =========== 1. Result Map Definitions (结果集映射) =========== -->
+    <!-- =================================================================
+         1. Result Map Definitions (结果集映射定义)
+         这是实现“一主多子”数据自动组装的核心。
+    ================================================================== -->
 
     <!-- 优化 #1: 创建一个统一的、包含所有子表的ResultMap -->
     <resultMap type="DevEquipmentComponents" id="DevEquipmentComponentsWithSubTablesResult">
         <!-- 主表字段 -->
-        <id     property="id"    column="component_id"    />
-        <result property="equipmentId"    column="equipment_id"    />
-        <result property="componentName"    column="component_name"    />
-        <result property="componentId"    column="component_business_id"    />
-        <result property="status"    column="status"    />
-        <result property="installDate"    column="install_date"    />
-        <result property="lifespanYears"    column="lifespan_years"    />
-        <result property="maxLifespanDate"    column="max_lifespan_date"    />
-        <result property="warrantyYears"    column="warranty_years"    />
-        <result property="warrantyEndDate"    column="warranty_end_date"    />
-        <result property="maintenanceRules"    column="maintenance_rules"    />
-        <result property="rulesFileUrl"    column="rules_file_url"    />
-        <result property="nextMaintenanceDate"    column="next_maintenance_date"    />
-        <result property="actualMaintenanceDate"  column="actual_maintenance_date"  /> <!-- (新增) -->
-        <result property="personnelId"    column="personnel_id"    />
-        <result property="remark"    column="remark"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
+        <id     property="id"                column="component_pk_id"        />
+        <result property="equipmentId"       column="equipment_id"           />
+        <result property="componentName"     column="component_name"         />
+        <result property="componentId"       column="component_business_id"  />
+        <result property="status"            column="status"                 />
+        <result property="installDate"       column="install_date"           />
+        <result property="lifespanYears"     column="lifespan_years"         />
+        <result property="maxLifespanDate"   column="max_lifespan_date"      />
+        <result property="warrantyYears"     column="warranty_years"         />
+        <result property="warrantyEndDate"   column="warranty_end_date"      />
+        <result property="maintenanceRules"  column="maintenance_rules"      />
+        <result property="rulesFileUrl"      column="rules_file_url"         />
+        <result property="nextMaintenanceDate" column="next_maintenance_date"  />
+        <result property="actualMaintenanceDate" column="actual_maintenance_date" />
+        <result property="personnelId"       column="personnel_id"           />
+        <result property="remark"            column="remark"                 />
+        <result property="createBy"          column="create_by"              />
+        <result property="createTime"        column="create_time"            />
+        <result property="updateBy"          column="update_by"              />
+        <result property="updateTime"        column="update_time"            />
 
         <!-- 子表1: 维护人员信息集合 -->
         <collection property="devPersonnelList" ofType="DevPersonnel" resultMap="DevPersonnelResult"/>
@@ -39,38 +42,47 @@
 
     <!-- 子表1: DevPersonnel 的 ResultMap -->
     <resultMap type="DevPersonnel" id="DevPersonnelResult">
-        <id     property="id"    column="personnel_pk_id"    />
-        <result property="personnelId"    column="personnel_business_id"    />
-        <result property="name"    column="personnel_name"    />
-        <!-- ... 其他人员字段 ... -->
+        <!-- 使用别名确保即使子表没有记录，主表也能正常加载 -->
+        <id     property="id"            column="personnel_pk_id"        />
+        <result property="personnelId"   column="personnel_business_id"  />
+        <result property="name"          column="personnel_name"         />
+        <result property="contactInfo"   column="personnel_contact_info" />
+        <!-- 您可以在此添加更多需要从JOIN查询中获取的人员字段 -->
     </resultMap>
 
     <!-- 子表2: DevAnnualMaintenancePlan 的 ResultMap -->
     <resultMap type="DevAnnualMaintenancePlan" id="DevAnnualMaintenancePlanResult">
         <!-- 核心修正: 将主键属性从 id 改为 planId，以匹配Java实体类 -->
-        <id     property="planId"    column="plan_pk_id"    />
-        <result property="componentId"    column="plan_component_id"    />
-        <result property="year"          column="plan_year"           />
-        <result property="scheduledDate" column="plan_scheduled_date" />
-        <result property="status"        column="plan_status"         />
-        <!-- ... 其他计划字段 ... -->
+        <id     property="planId"        column="plan_pk_id"             />
+        <result property="componentId"   column="plan_component_id"      />
+        <result property="year"          column="plan_year"              />
+        <result property="scheduledDate" column="plan_scheduled_date"    />
+        <result property="status"        column="plan_status"            />
+        <!-- 您可以在此添加更多需要从JOIN查询中获取的计划字段 -->
     </resultMap>
 
 
-    <!-- =========== 2. SQL Definitions (SQL定义) =========== -->
+    <!-- =================================================================
+         2. Reusable SQL Snippets (可复用SQL片段)
+    ================================================================== -->
 
-    <!-- 优化 #2: 创建一个包含所有JOIN查询的SQL片段，并使用别名避免列名冲突 -->
+    <!-- 优化 #2: 创建一个包含所有JOIN查询的SQL片段，并修正JOIN条件 -->
     <sql id="selectComponentsWithSubTablesVo">
         SELECT
-        c.id as component_id, c.equipment_id, c.component_name, c.component_id as component_business_id, c.status, c.install_date, c.lifespan_years, c.max_lifespan_date, c.warranty_years, c.warranty_end_date, c.maintenance_rules, c.rules_file_url, c.next_maintenance_date, c.actual_maintenance_date, c.personnel_id, c.remark, c.create_by, c.create_time, c.update_by, c.update_time,
-        p.id as personnel_pk_id, p.personnel_id as personnel_business_id, p.name as personnel_name,
+        c.id as component_pk_id, c.equipment_id, c.component_name, c.component_id as component_business_id, c.status, c.install_date, c.lifespan_years, c.max_lifespan_date, c.warranty_years, c.warranty_end_date, c.maintenance_rules, c.rules_file_url, c.next_maintenance_date, c.actual_maintenance_date, c.personnel_id, c.remark, c.create_by, c.create_time, c.update_by, c.update_time,
+        p.id as personnel_pk_id, p.personnel_id as personnel_business_id, p.name as personnel_name, p.contact_info as personnel_contact_info,
+        <!-- 核心修正: 将 plan.id 改为 plan.plan_id -->
         plan.plan_id as plan_pk_id, plan.component_id as plan_component_id, plan.year as plan_year, plan.scheduled_date as plan_scheduled_date, plan.status as plan_status
         FROM dev_equipment_components c
-        LEFT JOIN dev_personnel p ON c.personnel_id = p.id
-        LEFT JOIN dev_annual_maintenance_plan plan ON c.id = plan.component_id
+        LEFT JOIN dev_personnel p ON c.personnel_id = p.personnel_id
+        LEFT JOIN dev_annual_maintenance_plan plan ON c.component_id = plan.component_id
     </sql>
 
-    <!-- 优化 #3: 修改ById查询，使用新的SQL片段和统一的ResultMap -->
+    <!-- =================================================================
+         3. Main Table Operations (主表操作)
+    ================================================================== -->
+
+    <!-- 优化 #3: 修改ById和List查询，使用新的SQL片段和统一的ResultMap -->
     <select id="selectDevEquipmentComponentsById" parameterType="Long" resultMap="DevEquipmentComponentsWithSubTablesResult">
         <include refid="selectComponentsWithSubTablesVo"/>
         WHERE c.id = #{id}
@@ -83,7 +95,6 @@
         </where>
     </select>
 
-    <!-- ... insertDevEquipmentComponents 和 updateDevEquipmentComponents 保持不变 ... -->
     <insert id="insertDevEquipmentComponents" parameterType="DevEquipmentComponents" useGeneratedKeys="true" keyProperty="id">
         insert into dev_equipment_components
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -99,17 +110,13 @@
             <if test="maintenanceRules != null">maintenance_rules,</if>
             <if test="rulesFileUrl != null">rules_file_url,</if>
             <if test="nextMaintenanceDate != null">next_maintenance_date,</if>
-            <if test="actualMaintenanceDate != null">actual_maintenance_date,</if> <!-- (新增) -->
+            <if test="actualMaintenanceDate != null">actual_maintenance_date,</if>
             <if test="personnelId != null">personnel_id,</if>
             <if test="remark != null">remark,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-            <!-- 核心修正: 增加对自动计算日期的插入 -->
-            <if test="maxLifespanDate != null">max_lifespan_date,</if>
-            <if test="warrantyEndDate != null">warranty_end_date,</if>
-
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="equipmentId != null">#{equipmentId},</if>
@@ -124,17 +131,13 @@
             <if test="maintenanceRules != null">#{maintenanceRules},</if>
             <if test="rulesFileUrl != null">#{rulesFileUrl},</if>
             <if test="nextMaintenanceDate != null">#{nextMaintenanceDate},</if>
-            <if test="actualMaintenanceDate != null">#{actualMaintenanceDate},</if> <!-- (新增) -->
+            <if test="actualMaintenanceDate != null">#{actualMaintenanceDate},</if>
             <if test="personnelId != null">#{personnelId},</if>
             <if test="remark != null">#{remark},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-            <!-- 核心修正: 增加对自动计算日期的值 -->
-            <if test="maxLifespanDate != null">#{maxLifespanDate},</if>
-            <if test="warrantyEndDate != null">#{warrantyEndDate},</if>
-
         </trim>
     </insert>
 
@@ -147,23 +150,17 @@
             <if test="status != null">status = #{status},</if>
             <if test="installDate != null">install_date = #{installDate},</if>
             <if test="lifespanYears != null">lifespan_years = #{lifespanYears},</if>
-            <if test="maxLifespanDate != null">max_lifespan_date = #{maxLifespanDate},</if>
             <if test="warrantyYears != null">warranty_years = #{warrantyYears},</if>
-            <if test="warrantyEndDate != null">warranty_end_date = #{warrantyEndDate},</if>
             <if test="maintenanceRules != null">maintenance_rules = #{maintenanceRules},</if>
             <if test="rulesFileUrl != null">rules_file_url = #{rulesFileUrl},</if>
             <if test="nextMaintenanceDate != null">next_maintenance_date = #{nextMaintenanceDate},</if>
-            <if test="actualMaintenanceDate != null">actual_maintenance_date = #{actualMaintenanceDate},</if> <!-- (新增) -->
+            <if test="actualMaintenanceDate != null">actual_maintenance_date = #{actualMaintenanceDate},</if>
             <if test="personnelId != null">personnel_id = #{personnelId},</if>
             <if test="remark != null">remark = #{remark},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <!-- 核心修正: 增加对自动计算日期的更新 -->
             <if test="maxLifespanDate != null">max_lifespan_date = #{maxLifespanDate},</if>
             <if test="warrantyEndDate != null">warranty_end_date = #{warrantyEndDate},</if>
-
         </trim>
         where id = #{id}
     </update>
@@ -179,28 +176,31 @@
         </foreach>
     </delete>
 
-    <!-- =========== 子表1 (人员) 操作 =========== -->
+    <!-- =================================================================
+         4. Sub-Table 1 Operations (子表1: 人员 操作)
+    ================================================================== -->
     <delete id="deleteDevPersonnelByPersonnelId" parameterType="Long">
-        delete from dev_personnel where id = #{id}
+        delete from dev_personnel where personnel_id = #{personnelId}
     </delete>
 
     <delete id="deleteDevPersonnelByPersonnelIds" parameterType="String">
-        delete from dev_personnel where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
+        delete from dev_personnel where personnel_id in
+        <foreach item="personnelId" collection="array" open="(" separator="," close=")">
+            #{personnelId}
         </foreach>
     </delete>
 
-    <!-- 核心修正: 完善了batchDevPersonnel的插入字段，并移除了对自增主键id的插入 -->
     <insert id="batchDevPersonnel" parameterType="java.util.List">
-        INSERT INTO dev_personnel(personnel_id, name, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time)
+        INSERT INTO dev_personnel(personnel_id, name, contact_info, personnel_type, certificate_info, certificate_photo_url, certificate_expiry_date, skill_score, permissions, vendor_id, remark, create_by, create_time)
         VALUES
         <foreach item="item" index="index" collection="list" separator=",">
-            (#{item.personnelId}, #{item.name}, #{item.personnelType}, #{item.certificateInfo}, #{item.certificatePhotoUrl}, #{item.certificateExpiryDate}, #{item.skillScore}, #{item.permissions}, #{item.vendorId}, #{item.remark}, #{item.createBy}, sysdate())
+            (#{item.personnelId}, #{item.name}, #{item.contactInfo}, #{item.personnelType}, #{item.certificateInfo}, #{item.certificatePhotoUrl}, #{item.certificateExpiryDate}, #{item.skillScore}, #{item.permissions}, #{item.vendorId}, #{item.remark}, #{item.createBy}, sysdate())
         </foreach>
     </insert>
 
-    <!-- =========== 优化 #4: 新增子表2 (年度计划) 操作 =========== -->
+    <!-- =================================================================
+         5. Sub-Table 2 Operations (子表2: 年度计划 操作)
+    ================================================================== -->
     <delete id="deleteDevAnnualMaintenancePlanByComponentId" parameterType="Long">
         DELETE FROM dev_annual_maintenance_plan WHERE component_id = #{id}
     </delete>

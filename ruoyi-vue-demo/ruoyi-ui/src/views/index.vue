@@ -1,10 +1,10 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h2>idc设备维护系统</h2>
+      <el-col :sm="24" :lg="12" style="padding-left: 22px">
+        <h2>idc设备维护全生命周期系统</h2>
         <p>
-         讲解，内容待填充。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+         具体内部表单包含对设备整体表单记录、设备部件表单记录、年度作业计划表记录、作业维护细节表、归档部件表、维护作业黑名单表、人员表、供应商表。
         </p>
         <p>
           <b>当前版本:</b> <span>v{{ version }}</span>
@@ -32,32 +32,24 @@
       <el-col :sm="24" :lg="12" style="padding-left: 50px">
         <el-row>
           <el-col :span="12">
-            <h2>技术选型</h2>
+            <h2>表单分成</h2>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="6">
-            <h4>后端技术</h4>
+            <h4>设备维护</h4>
             <ul>
-              <li>SpringBoot</li>
-              <li>Spring Security</li>
-              <li>JWT</li>
-              <li>MyBatis</li>
-              <li>Druid</li>
-              <li>Fastjson</li>
-              <li>...</li>
+              <li>设备主档表</li>
+              <li>设备部件表</li>
             </ul>
           </el-col>
           <el-col :span="6">
-            <h4>前端技术</h4>
+            <h4>时间规划</h4>
             <ul>
-              <li>Vue</li>
-              <li>Vuex</li>
-              <li>Element-ui</li>
-              <li>Axios</li>
-              <li>Sass</li>
-              <li>Quill</li>
-              <li>...</li>
+              <li>年度作业计划表</li>
+              <li>维护细节表</li>
+              <li>归档部件表</li>
+              <li>维护黑名单表</li>
             </ul>
           </el-col>
         </el-row>
@@ -72,30 +64,17 @@
           </div>
           <div class="body">
             <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link
-                href="http://www.ruoyi.vip"
-                target="_blank"
-                >http://www.ruoyi.vip</el-link
-              >
+              <i class="el-icon-s-promotion"></i> 维护责任人：
+
+
             </p>
             <p>
-              <i class="el-icon-user-solid"></i> QQ群：<s> 满937441 </s> <s> 满887144332 </s>
-              <s> 满180251782 </s> <s> 满104180207 </s> <s> 满186866453 </s> <s> 满201396349 </s>
-              <s> 满228578329 </s> <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=GsOo-OLz53J8y_9TPoO6XXSGNRTgbFxA&authKey=R7Uy%2Feq%2BZsoKNqHvRKhiXpypW7DAogoWapOawUGHokJSBIBIre2%2FoiAZeZBSLuBc&noverify=0&group_code=191164766" target="_blank">191164766</a>
+              <i class="el-icon-user-solid"></i> 联系电话：
             </p>
             <p>
-              <i class="el-icon-chat-dot-round"></i> 微信：<a
-                href="javascript:;"
-                >/ *若依</a
-              >
+              <i class="el-icon-chat-dot-round"></i> 邮箱：
             </p>
-            <p>
-              <i class="el-icon-money"></i> 支付宝：<a
-                href="javascript:;"
-                class="支付宝信息"
-                >/ *若依</a
-              >
-            </p>
+
           </div>
         </el-card>
       </el-col>
@@ -117,21 +96,6 @@
               </ol>
             </el-collapse-item>
 
-            <el-collapse-item title="v1.1.0 - 2019-11-11">
-              <ol>
-                <li>新增在线用户管理</li>
-                <li>新增按钮组功能实现（批量删除、导出、清空）</li>
-                <li>新增查询条件重置按钮</li>
-                <li>新增Swagger全局Token配置</li>
-                <li>新增后端参数校验</li>
-                <li>修复字典管理页面的日期查询异常</li>
-                <li>修改时间函数命名防止冲突</li>
-                <li>去除菜单上级校验，默认为顶级</li>
-                <li>修复用户密码无法修改问题</li>
-                <li>修复菜单类型为按钮时不显示权限标识</li>
-                <li>其他细节优化</li>
-              </ol>
-            </el-collapse-item>
             <el-collapse-item title="v1.0.0 - 2019-10-08">
               <ol>
                 <li>若依前后端分离系统正式发布</li>
@@ -143,7 +107,7 @@
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <div slot="header" class="clearfix">
-            <span>ccccc</span>
+            <span>图标</span>
           </div>
           <div class="body">
             <img
