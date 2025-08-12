@@ -3,6 +3,7 @@ package com.ruoyi.system.mapper;
 import java.util.List;
 import com.ruoyi.system.domain.DevEquipmentMaster;
 import com.ruoyi.system.domain.DevEquipmentComponents;
+import org.springframework.data.repository.query.Param;
 
 /**
  * 设备主档Mapper接口
@@ -84,4 +85,21 @@ public interface DevEquipmentMasterMapper
      * @return 结果
      */
     public int deleteDevEquipmentComponentsByEquipmentId(Long id);
+
+    /**
+     * 查询即将到达最大使用年限的设备主档列表
+     *
+     * @param days 提前提醒的天数
+     * @return 设备主档列表
+     */
+    public List<DevEquipmentMaster> selectMasterLifecycleAlerts(@Param("days") int days);
+
+    /**
+     * 查询即将到达质保时间的设备主档列表
+     *
+     * @param days 提前提醒的天数
+     * @return 设备主档列表
+     */
+    public List<DevEquipmentMaster> selectMasterWarrantyAlerts(@Param("days") int days);
+
 }

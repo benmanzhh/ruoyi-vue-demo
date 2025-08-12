@@ -193,4 +193,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ( #{item.id}, #{item.equipmentId}, #{item.componentName}, #{item.componentId}, #{item.status}, #{item.installDate}, #{item.lifespanYears}, #{item.maxLifespanDate}, #{item.warrantyYears}, #{item.warrantyEndDate}, #{item.maintenanceRules}, #{item.rulesFileUrl}, #{item.nextMaintenanceDate}, #{item.personnelId}, #{item.remark}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
         </foreach>
     </insert>
+    <select id="selectMasterLifecycleAlerts" resultMap="DevEquipmentMasterResult">
+        SELECT category, equipment_id, location, maintainer_id, max_lifespan_date
+        FROM dev_equipment_master
+        WHERE DATEDIFF(max_lifespan_date, CURDATE()) &lt;= #{days} AND max_lifespan_date &gt;= CURDATE()
+    </select>
+    <select id="selectMasterWarrantyAlerts" resultMap="DevEquipmentMasterResult">
+        SELECT category, equipment_id, location, maintainer_id, warranty_end_date
+        FROM dev_equipment_master
+        WHERE DATEDIFF(warranty_end_date, CURDATE()) &lt;= #{days} AND warranty_end_date &gt;= CURDATE()
+    </select>
+
 </mapper>

@@ -4,12 +4,11 @@
       <el-col :sm="24" :lg="12" style="padding-left: 22px">
         <h2>idc设备维护全生命周期系统</h2>
         <p>
-         具体内部表单包含对设备整体表单记录、设备部件表单记录、年度作业计划表记录、作业维护细节表、归档部件表、维护作业黑名单表、人员表、供应商表。
+          具体内部表单包含对设备整体表单记录、设备部件表单记录、年度作业计划表记录、作业维护细节表、归档部件表、维护作业黑名单表、人员表、供应商表。
         </p>
         <p>
           <b>当前版本:</b> <span>v{{ version }}</span>
         </p>
-
         <p>
           <el-button
             type="primary"
@@ -63,45 +62,10 @@
             <span>联系信息</span>
           </div>
           <div class="body">
-            <p>
-              <i class="el-icon-s-promotion"></i> 维护责任人：
-
-
-            </p>
-            <p>
-              <i class="el-icon-user-solid"></i> 联系电话：
-            </p>
-            <p>
-              <i class="el-icon-chat-dot-round"></i> 邮箱：
-            </p>
-
+            <p><i class="el-icon-s-promotion"></i> 维护责任人：</p>
+            <p><i class="el-icon-user-solid"></i> 联系电话：</p>
+            <p><i class="el-icon-chat-dot-round"></i> 邮箱：</p>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
-          <div slot="header" class="clearfix">
-            <span>更新日志</span>
-          </div>
-          <el-collapse accordion>
-            <el-collapse-item title="v3.9.0 - 2025-05-28">
-              <ol>
-                <li>优化菜单搜索查询页</li>
-                <li>导航栏显示昵称&设置</li>
-                <li>菜单管理新增路由名称</li>
-                <li>添加底部版权信息&开关</li>
-                <li>分配角色禁用不允许勾选</li>
-                <li>Excel导入导出支持多图片</li>
-                <li>添加页签图标显示开关功能</li>
-              </ol>
-            </el-collapse-item>
-
-            <el-collapse-item title="v1.0.0 - 2019-10-08">
-              <ol>
-                <li>若依前后端分离系统正式发布</li>
-              </ol>
-            </el-collapse-item>
-          </el-collapse>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
@@ -110,12 +74,87 @@
             <span>图标</span>
           </div>
           <div class="body">
-            <img
-              src="@/assets/images/pay.png"
-              alt="donate"
-              width="100%"
-            />
+                               <img
+                                 src="@/assets/images/pay.png"
+                                 alt="donate"
+                                 width="100%"
+                               />
 
+                             </div>
+
+        </el-card>
+      </el-col>
+
+      <!-- (优化) 统一的提醒框 -->
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-card class="update-log">
+          <div slot="header" class="clearfix">
+            <span>生命周期与质保提醒</span>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="fetchCombinedAlerts" icon="el-icon-refresh"></el-button>
+          </div>
+          <div v-loading="loadingAlerts" class="body alert-body">
+            <div v-if="!hasAlerts" class="no-alerts">
+              <i class="el-icon-success"></i>
+              <p>一切正常！暂无任何临期提醒。</p>
+            </div>
+            <div v-else>
+              <!-- 使用年限提醒 -->
+              <div class="alert-section" v-if="hasLifecycleAlerts">
+                <h4>使用年限提醒</h4>
+                <ul>
+                  <li v-for="(item, index) in combinedAlerts.lifecycleMasterAlerts" :key="'life-master-' + index">
+                    <div class="alert-item">
+                      <i class="el-icon-warning-outline"></i>
+                      <div class="alert-content">
+                        <span><strong>设备:</strong> {{ item.equipmentId }} ({{ item.category }})</span>
+                        <span class="location"><strong>位置:</strong> {{ item.location }}</span>
+                        <span class="message">即将到达使用年限!</span>
+                        <span class="maintainer"><strong>维护人ID:</strong> {{ item.maintainerId }}</span>
+                      </div>
+                    </div>
+                  </li>
+                   <li v-for="(item, index) in combinedAlerts.lifecycleComponentAlerts" :key="'life-comp-' + index">
+                    <div class="alert-item">
+                      <i class="el-icon-warning-outline"></i>
+                      <div class="alert-content">
+                        <span><strong>部件:</strong> {{ item.componentId }}</span>
+                        <span class="location"><strong>所属设备:</strong> {{ item.equipmentId }}</span>
+                        <span class="message">即将到达使用年限!</span>
+                        <span class="maintainer"><strong>维护人ID:</strong> {{ item.personnelId }}</span>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <!-- 质保提醒 -->
+              <div class="alert-section" v-if="hasWarrantyAlerts">
+                <h4>质保提醒</h4>
+                <ul>
+                  <li v-for="(item, index) in combinedAlerts.warrantyMasterAlerts" :key="'warranty-master-' + index">
+                    <div class="alert-item">
+                      <i class="el-icon-warning-outline" style="color: #409EFF;"></i>
+                      <div class="alert-content">
+                        <span><strong>设备:</strong> {{ item.equipmentId }} ({{ item.category }})</span>
+                        <span class="location"><strong>位置:</strong> {{ item.location }}</span>
+                        <span class="message warranty-message">即将到达质保年限!</span>
+                        <span class="maintainer"><strong>维护人ID:</strong> {{ item.maintainerId }}</span>
+                      </div>
+                    </div>
+                  </li>
+                   <li v-for="(item, index) in combinedAlerts.warrantyComponentAlerts" :key="'warranty-comp-' + index">
+                    <div class="alert-item">
+                      <i class="el-icon-warning-outline" style="color: #409EFF;"></i>
+                      <div class="alert-content">
+                        <span><strong>部件:</strong> {{ item.componentId }}</span>
+                        <span class="location"><strong>所属设备:</strong> {{ item.equipmentId }}</span>
+                        <span class="message warranty-message">即将到达质保年限!</span>
+                        <span class="maintainer"><strong>维护人ID:</strong> {{ item.personnelId }}</span>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -124,83 +163,131 @@
 </template>
 
 <script>
+// (优化) 引入统一的API方法
+import { getCombinedAlerts } from "@/api/system/master"; // 请确保API路径正确
+
 export default {
   name: "Index",
   data() {
     return {
-      // 版本号
-      version: "3.9.0"
+      version: "0.0.1",
+      // (优化) 用于存储所有提醒数据的统一对象
+      combinedAlerts: {
+        lifecycleMasterAlerts: [],
+        lifecycleComponentAlerts: [],
+        warrantyMasterAlerts: [],
+        warrantyComponentAlerts: []
+      },
+      loadingAlerts: true
+    };
+  },
+  computed: {
+    // (优化) 计算属性，判断是否有任何类型的提醒
+    hasAlerts() {
+      return this.hasLifecycleAlerts || this.hasWarrantyAlerts;
+    },
+    hasLifecycleAlerts() {
+      return (
+        (this.combinedAlerts.lifecycleMasterAlerts && this.combinedAlerts.lifecycleMasterAlerts.length > 0) ||
+        (this.combinedAlerts.lifecycleComponentAlerts && this.combinedAlerts.lifecycleComponentAlerts.length > 0)
+      );
+    },
+    hasWarrantyAlerts() {
+      return (
+        (this.combinedAlerts.warrantyMasterAlerts && this.combinedAlerts.warrantyMasterAlerts.length > 0) ||
+        (this.combinedAlerts.warrantyComponentAlerts && this.combinedAlerts.warrantyComponentAlerts.length > 0)
+      );
     }
+  },
+  created() {
+    this.fetchCombinedAlerts();
   },
   methods: {
     goTarget(href) {
-      window.open(href, "_blank")
+      window.open(href, "_blank");
+    },
+    // (优化) 获取统一提醒数据的方法
+    fetchCombinedAlerts() {
+      this.loadingAlerts = true;
+      getCombinedAlerts().then(response => {
+        this.combinedAlerts = response.data;
+        this.loadingAlerts = false;
+      }).catch(() => {
+        this.loadingAlerts = false;
+      });
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
 .home {
-  blockquote {
-    padding: 10px 20px;
-    margin: 0 0 20px;
-    font-size: 17.5px;
-    border-left: 5px solid #eee;
-  }
-  hr {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border: 0;
-    border-top: 1px solid #eee;
-  }
-  .col-item {
-    margin-bottom: 20px;
-  }
+  // ... 其他样式保持不变 ...
 
-  ul {
-    padding: 0;
-    margin: 0;
-  }
+  .alert-body {
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 13px;
-  color: #676a6c;
-  overflow-x: hidden;
-
-  ul {
-    list-style-type: none;
-  }
-
-  h4 {
-    margin-top: 0px;
-  }
-
-  h2 {
-    margin-top: 10px;
-    font-size: 26px;
-    font-weight: 100;
-  }
-
-  p {
-    margin-top: 10px;
-
-    b {
-      font-weight: 700;
+    .no-alerts {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      color: #909399;
+      i {
+        font-size: 48px;
+        color: #67C23A;
+      }
+      p {
+        margin-top: 10px;
+      }
     }
-  }
-
-  .update-log {
-    ol {
-      display: block;
-      list-style-type: decimal;
-      margin-block-start: 1em;
-      margin-block-end: 1em;
-      margin-inline-start: 0;
-      margin-inline-end: 0;
-      padding-inline-start: 40px;
+    .alert-section {
+      margin-bottom: 15px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      h4 {
+        font-size: 14px;
+        margin: 0 0 8px 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+      ul {
+        li {
+          margin-bottom: 12px;
+          .alert-item {
+            display: flex;
+            align-items: flex-start;
+            i {
+              color: #E6A23C;
+              font-size: 18px;
+              margin-right: 8px;
+              margin-top: 2px;
+            }
+            .alert-content {
+              display: flex;
+              flex-direction: column;
+              font-size: 13px;
+              line-height: 1.5;
+              .location, .maintainer {
+                color: #909399;
+                font-size: 12px;
+              }
+              .message {
+                color: #F56C6C;
+                font-weight: bold;
+              }
+              .warranty-message {
+                  color: #409EFF;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
 </style>
-

@@ -58,4 +58,23 @@ public interface IDevEquipmentMasterService
      * @return 结果
      */
     public int deleteDevEquipmentMasterById(Long id);
+
+//    /**
+//     * 获取生命周期提醒数据
+//     * @return 提醒数据DTO
+//     */
+//    public com.ruoyi.system.dto.LifecycleAlertDto getLifecycleAlerts();
+//
+//    /**
+//     * 获取质保提醒数据
+//     * @return 提醒数据DTO
+//     */
+//    public com.ruoyi.system.dto.WarrantyAlertDto getWarrantyAlerts();
+
+    /**
+     * 获取统一的生命周期与质保提醒数据
+     * @return 统一提醒数据DTO
+     */
+    public com.ruoyi.system.dto.CombinedAlertDto getCombinedAlerts();
+
 }

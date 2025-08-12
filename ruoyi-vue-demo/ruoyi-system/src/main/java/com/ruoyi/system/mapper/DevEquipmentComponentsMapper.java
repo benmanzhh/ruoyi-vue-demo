@@ -5,6 +5,7 @@ import java.util.List;
 import com.ruoyi.system.domain.DevAnnualMaintenancePlan;
 import com.ruoyi.system.domain.DevEquipmentComponents;
 import com.ruoyi.system.domain.DevPersonnel;
+import org.springframework.data.repository.query.Param;
 
 /**
  * 设备部件Mapper接口
@@ -105,4 +106,21 @@ public interface DevEquipmentComponentsMapper
      * @return 结果
      */
     public int deleteDevPersonnelByPersonnelId(Long id);
+
+
+    /**
+     * 查询即将到达最大使用年限的设备部件列表
+     *
+     * @param days 提前提醒的天数
+     * @return 设备部件列表
+     */
+    public List<DevEquipmentComponents> selectComponentLifecycleAlerts(@Param("days") int days);
+    /**
+     * 查询即将到达质保时间的设备部件列表
+     *
+     * @param days 提前提醒的天数
+     * @return 设备部件列表
+     */
+    public List<DevEquipmentComponents> selectComponentWarrantyAlerts(@Param("days") int days);
+
 }

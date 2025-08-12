@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.ruoyi.system.mapper.DevEquipmentComponentsMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
@@ -36,6 +38,10 @@ import com.ruoyi.system.service.IDevEquipmentMasterService;
 @Service
 public class DevEquipmentMasterServiceImpl implements IDevEquipmentMasterService
 {
+
+    @Autowired
+    private DevEquipmentComponentsMapper devEquipmentComponentsMapper;
+
     private static final Logger log = LoggerFactory.getLogger(DevEquipmentMasterServiceImpl.class);
 
     @Autowired
@@ -258,5 +264,47 @@ public class DevEquipmentMasterServiceImpl implements IDevEquipmentMasterService
         String nextChinese = reverseMapping.get(currentNum + 1);
         if (nextChinese == null) return null;
         return Pattern.compile("附件" + nextChinese + "[\\s:：]*");
+    }
+
+//    @Override
+//    public com.ruoyi.system.dto.LifecycleAlertDto getLifecycleAlerts() {
+//        int alertDays = 180; // 设置提醒天数
+//        List<DevEquipmentMaster> masterAlerts = devEquipmentMasterMapper.selectMasterLifecycleAlerts(alertDays);
+//        List<DevEquipmentComponents> componentAlerts = devEquipmentComponentsMapper.selectComponentLifecycleAlerts(alertDays);
+//
+//        com.ruoyi.system.dto.LifecycleAlertDto dto = new com.ruoyi.system.dto.LifecycleAlertDto();
+//        dto.setMasterAlerts(masterAlerts);
+//        dto.setComponentAlerts(componentAlerts);
+//        return dto;}
+//
+//    @Override
+//    public com.ruoyi.system.dto.WarrantyAlertDto getWarrantyAlerts() {
+//        int alertDays = 90; // 设置提醒天数
+//        List<DevEquipmentMaster> masterAlerts = devEquipmentMasterMapper.selectMasterWarrantyAlerts(alertDays);
+//        List<DevEquipmentComponents> componentAlerts = devEquipmentComponentsMapper.selectComponentWarrantyAlerts(alertDays);
+//
+//        com.ruoyi.system.dto.WarrantyAlertDto dto = new com.ruoyi.system.dto.WarrantyAlertDto();
+//        dto.setMasterAlerts(masterAlerts);
+//        dto.setComponentAlerts(componentAlerts);
+//        return dto;
+//    }
+
+    @Override
+    public com.ruoyi.system.dto.CombinedAlertDto getCombinedAlerts() {
+        int lifecycleAlertDays = 180;
+        int warrantyAlertDays = 90;
+
+        List<DevEquipmentMaster> lifecycleMasterAlerts = devEquipmentMasterMapper.selectMasterLifecycleAlerts(lifecycleAlertDays);
+        List<DevEquipmentComponents> lifecycleComponentAlerts = devEquipmentComponentsMapper.selectComponentLifecycleAlerts(lifecycleAlertDays);
+        List<DevEquipmentMaster> warrantyMasterAlerts = devEquipmentMasterMapper.selectMasterWarrantyAlerts(warrantyAlertDays);
+        List<DevEquipmentComponents> warrantyComponentAlerts = devEquipmentComponentsMapper.selectComponentWarrantyAlerts(warrantyAlertDays);
+
+        com.ruoyi.system.dto.CombinedAlertDto dto = new com.ruoyi.system.dto.CombinedAlertDto();
+        dto.setLifecycleMasterAlerts(lifecycleMasterAlerts);
+        dto.setLifecycleComponentAlerts(lifecycleComponentAlerts);
+        dto.setWarrantyMasterAlerts(warrantyMasterAlerts);
+        dto.setComponentAlerts(warrantyComponentAlerts);
+
+        return dto;
     }
 }

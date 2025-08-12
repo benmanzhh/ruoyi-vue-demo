@@ -6,16 +6,14 @@
 
     <!-- =================================================================
          1. Result Map Definitions (结果集映射定义)
-         这是实现“一主多子”数据自动组装的核心。
     ================================================================== -->
 
-    <!-- 优化 #1: 创建一个统一的、包含所有子表的ResultMap -->
-    <resultMap type="DevEquipmentComponents" id="DevEquipmentComponentsWithSubTablesResult">
-        <!-- 主表字段 -->
-        <id     property="id"                column="component_pk_id"        />
+    <!-- (新增) 核心修正: 添加一个基础的ResultMap -->
+    <resultMap type="DevEquipmentComponents" id="DevEquipmentComponentsResult">
+        <id     property="id"                column="id"        />
         <result property="equipmentId"       column="equipment_id"           />
         <result property="componentName"     column="component_name"         />
-        <result property="componentId"       column="component_business_id"  />
+        <result property="componentId"       column="component_id"  />
         <result property="status"            column="status"                 />
         <result property="installDate"       column="install_date"           />
         <result property="lifespanYears"     column="lifespan_years"         />
@@ -32,6 +30,13 @@
         <result property="createTime"        column="create_time"            />
         <result property="updateBy"          column="update_by"              />
         <result property="updateTime"        column="update_time"            />
+    </resultMap>
+
+    <!-- 包含所有子表的ResultMap -->
+    <resultMap type="DevEquipmentComponents" id="DevEquipmentComponentsWithSubTablesResult" extends="DevEquipmentComponentsResult">
+        <!-- 主表字段别名修正 -->
+        <id     property="id"    column="component_pk_id"    />
+        <result property="componentId"    column="component_business_id"    />
 
         <!-- 子表1: 维护人员信息集合 -->
         <collection property="devPersonnelList" ofType="DevPersonnel" resultMap="DevPersonnelResult"/>
@@ -42,23 +47,19 @@
 
     <!-- 子表1: DevPersonnel 的 ResultMap -->
     <resultMap type="DevPersonnel" id="DevPersonnelResult">
-        <!-- 使用别名确保即使子表没有记录，主表也能正常加载 -->
         <id     property="id"            column="personnel_pk_id"        />
         <result property="personnelId"   column="personnel_business_id"  />
         <result property="name"          column="personnel_name"         />
         <result property="contactInfo"   column="personnel_contact_info" />
-        <!-- 您可以在此添加更多需要从JOIN查询中获取的人员字段 -->
     </resultMap>
 
     <!-- 子表2: DevAnnualMaintenancePlan 的 ResultMap -->
     <resultMap type="DevAnnualMaintenancePlan" id="DevAnnualMaintenancePlanResult">
-        <!-- 核心修正: 将主键属性从 id 改为 planId，以匹配Java实体类 -->
         <id     property="planId"        column="plan_pk_id"             />
         <result property="componentId"   column="plan_component_id"      />
         <result property="year"          column="plan_year"              />
         <result property="scheduledDate" column="plan_scheduled_date"    />
         <result property="status"        column="plan_status"            />
-        <!-- 您可以在此添加更多需要从JOIN查询中获取的计划字段 -->
     </resultMap>
 
 
@@ -66,23 +67,20 @@
          2. Reusable SQL Snippets (可复用SQL片段)
     ================================================================== -->
 
-    <!-- 优化 #2: 创建一个包含所有JOIN查询的SQL片段，并修正JOIN条件 -->
     <sql id="selectComponentsWithSubTablesVo">
         SELECT
         c.id as component_pk_id, c.equipment_id, c.component_name, c.component_id as component_business_id, c.status, c.install_date, c.lifespan_years, c.max_lifespan_date, c.warranty_years, c.warranty_end_date, c.maintenance_rules, c.rules_file_url, c.next_maintenance_date, c.actual_maintenance_date, c.personnel_id, c.remark, c.create_by, c.create_time, c.update_by, c.update_time,
         p.id as personnel_pk_id, p.personnel_id as personnel_business_id, p.name as personnel_name, p.contact_info as personnel_contact_info,
-        <!-- 核心修正: 将 plan.id 改为 plan.plan_id -->
         plan.plan_id as plan_pk_id, plan.component_id as plan_component_id, plan.year as plan_year, plan.scheduled_date as plan_scheduled_date, plan.status as plan_status
         FROM dev_equipment_components c
         LEFT JOIN dev_personnel p ON c.personnel_id = p.personnel_id
-        LEFT JOIN dev_annual_maintenance_plan plan ON c.component_id = plan.component_id
+        LEFT JOIN dev_annual_maintenance_plan plan ON c.id = plan.component_id
     </sql>
 
     <!-- =================================================================
          3. Main Table Operations (主表操作)
     ================================================================== -->
 
-    <!-- 优化 #3: 修改ById和List查询，使用新的SQL片段和统一的ResultMap -->
     <select id="selectDevEquipmentComponentsById" parameterType="Long" resultMap="DevEquipmentComponentsWithSubTablesResult">
         <include refid="selectComponentsWithSubTablesVo"/>
         WHERE c.id = #{id}
@@ -220,4 +218,15 @@
         </foreach>
     </insert>
 
+    <!-- (新增) 核心修正: 添加生命周期提醒查询 -->
+    <select id="selectComponentLifecycleAlerts" resultMap="DevEquipmentComponentsResult">
+        SELECT component_id, equipment_id, personnel_id, max_lifespan_date
+        FROM dev_equipment_components
+        WHERE DATEDIFF(max_lifespan_date, CURDATE()) &lt;= #{days} AND max_lifespan_date &gt;= CURDATE()
+    </select>
+    <select id="selectComponentWarrantyAlerts" resultMap="DevEquipmentComponentsResult">
+        SELECT component_id, equipment_id, personnel_id, warranty_end_date
+        FROM dev_equipment_components
+        WHERE DATEDIFF(warranty_end_date, CURDATE()) &lt;= #{days} AND warranty_end_date &gt;= CURDATE()
+    </select>
 </mapper>
