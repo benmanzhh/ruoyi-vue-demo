@@ -113,13 +113,13 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <!-- 主表表格 -->
+    <!-- 核心修正: 重新审查并确认了所有列的定义，确保没有多余或错误的列导致空白 -->
     <el-table v-loading="loading" :data="equipcomponentsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="部件主键ID" align="center" prop="id" width="100"/>
       <el-table-column label="部件名称" align="center" prop="componentName" width="150" :show-overflow-tooltip="true"/>
       <el-table-column label="部件ID" align="center" prop="componentId" width="150" :show-overflow-tooltip="true"/>
-      <el-table-column label="所属设备ID" align="center" prop="equipmentId" width="110"/>
+      <el-table-column label="所属设备ID" align="center" prop="equipmentId" width="150"/>
       <el-table-column label="部件状态" align="center" prop="status" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.dev_status" :value="scope.row.status"/>
@@ -153,7 +153,8 @@
           <span>{{ parseTime(scope.row.actualMaintenanceDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="维护人员ID" align="center" prop="personnelId" width="110"/>
+      <el-table-column label="维护人员ID" align="center" prop="personnelId" width="140"/>
+      <el-table-column label="备注" align="center" prop="remark" width="150" :show-overflow-tooltip="true"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120">
         <template slot-scope="scope">
           <el-button
@@ -294,6 +295,13 @@
             <el-col :span="24">
                 <el-form-item label="维修规范" prop="maintenanceRules">
                   <el-input v-model="form.maintenanceRules" type="textarea" placeholder="请输入内容" />
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24">
+                <el-form-item label="备注" prop="remark">
+                  <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
                 </el-form-item>
             </el-col>
         </el-row>
@@ -546,7 +554,7 @@ export default {
       }
       this.form.devPersonnelList.push({
         name: "",
-        contactInfo: "", // (新增) 初始化新字段
+        contactInfo: "",
         personnelType: null,
       });
     },

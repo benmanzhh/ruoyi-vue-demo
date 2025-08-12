@@ -89,7 +89,13 @@
     <select id="selectDevEquipmentComponentsList" parameterType="DevEquipmentComponents" resultMap="DevEquipmentComponentsWithSubTablesResult">
         <include refid="selectComponentsWithSubTablesVo"/>
         <where>
+            <if test="equipmentId != null "> and c.equipment_id = #{equipmentId}</if>
             <if test="componentName != null  and componentName != ''"> and c.component_name like concat('%', #{componentName}, '%')</if>
+            <if test="componentId != null  and componentId != ''"> and c.component_id = #{componentId}</if>
+            <if test="status != null  and status != ''"> and c.status = #{status}</if>
+            <if test="installDate != null "> and c.install_date = #{installDate}</if>
+            <if test="actualMaintenanceDate != null "> and c.actual_maintenance_date = #{actualMaintenanceDate}</if>
+            <if test="personnelId != null "> and c.personnel_id = #{personnelId}</if>
         </where>
     </select>
 
