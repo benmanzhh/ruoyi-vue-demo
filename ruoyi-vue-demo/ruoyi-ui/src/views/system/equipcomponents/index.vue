@@ -113,7 +113,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <!-- 核心修正: 重新审查并确认了所有列的定义，确保没有多余或错误的列导致空白 -->
+    <!-- 主表表格 -->
     <el-table v-loading="loading" :data="equipcomponentsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="部件主键ID" align="center" prop="id" width="100"/>
@@ -153,7 +153,7 @@
           <span>{{ parseTime(scope.row.actualMaintenanceDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="维护人员ID" align="center" prop="personnelId" width="140"/>
+      <el-table-column label="维护人员ID" align="center" prop="personnelId" width="110"/>
       <el-table-column label="备注" align="center" prop="remark" width="150" :show-overflow-tooltip="true"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120">
         <template slot-scope="scope">
@@ -321,11 +321,12 @@
                   <el-input v-model="scope.row.contactInfo" placeholder="请输入联系方式" />
                 </template>
               </el-table-column>
+              <!-- (核心修正) 将人员属性输入框改为下拉选择 -->
               <el-table-column label="人员属性" prop="personnelType" width="180">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.personnelType" placeholder="请选择人员属性">
                     <el-option
-                      v-for="dict in dict.type.dev_personnel_type"
+                      v-for="dict in dict.type.t_personnel"
                       :key="dict.value"
                       :label="dict.label"
                       :value="dict.value"
@@ -398,7 +399,8 @@ import { listEquipcomponents, getEquipcomponents, delEquipcomponents, addEquipco
 
 export default {
   name: "Equipcomponents",
-  dicts: ['dev_status', 'dev_personnel_type'],
+  // (核心修正) 引入新的字典类型
+  dicts: ['dev_status', 't_personnel'],
   data() {
     return {
       loading: true,

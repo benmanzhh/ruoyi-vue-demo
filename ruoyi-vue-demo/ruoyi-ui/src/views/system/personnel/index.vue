@@ -17,7 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- (新增) 搜索项 -->
       <el-form-item label="联系方式" prop="contactInfo">
         <el-input
           v-model="queryParams.contactInfo"
@@ -26,21 +25,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="证书到期时间" prop="certificateExpiryDate">
-        <el-date-picker clearable
-          v-model="queryParams.certificateExpiryDate"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择证书到期时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="所属供应商ID" prop="vendorId">
-        <el-input
-          v-model="queryParams.vendorId"
-          placeholder="请输入所属供应商ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <!-- (核心修正) 将人员属性搜索框改为下拉选择 -->
+      <el-form-item label="人员属性" prop="personnelType">
+        <el-select v-model="queryParams.personnelType" placeholder="请选择人员属性" clearable>
+          <el-option
+            v-for="dict in dict.type.t_personnel"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -99,9 +93,13 @@
       <el-table-column label="人员主键ID" align="center" prop="id" />
       <el-table-column label="员工ID" align="center" prop="personnelId" />
       <el-table-column label="姓名" align="center" prop="name" />
-      <!-- (新增) 表格列 -->
       <el-table-column label="员工联系方式" align="center" prop="contactInfo" />
-      <el-table-column label="人员属性" align="center" prop="personnelType" />
+      <!-- (核心修正) 使用 dict-tag 显示人员属性标签 -->
+      <el-table-column label="人员属性" align="center" prop="personnelType">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.t_personnel" :value="scope.row.personnelType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="证书到期时间" align="center" prop="certificateExpiryDate" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.certificateExpiryDate, '{y}-{m}-{d}') }}</span>
@@ -154,14 +152,21 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <!-- (新增) 表单项 -->
             <el-form-item label="员工联系方式" prop="contactInfo">
               <el-input v-model="form.contactInfo" placeholder="请输入联系方式" />
             </el-form-item>
           </el-col>
            <el-col :span="12">
+            <!-- (核心修正) 将人员属性输入框改为下拉选择 -->
             <el-form-item label="人员属性" prop="personnelType">
-              <el-input v-model="form.personnelType" placeholder="请输入人员属性" />
+              <el-select v-model="form.personnelType" placeholder="请选择人员属性">
+                <el-option
+                  v-for="dict in dict.type.t_personnel"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -228,6 +233,8 @@ import { listPersonnel, getPersonnel, delPersonnel, addPersonnel, updatePersonne
 
 export default {
   name: "Personnel",
+  // (核心修正) 引入新的字典类型
+  dicts: ['t_personnel'],
   data() {
     return {
       loading: true,
@@ -246,7 +253,8 @@ export default {
         pageSize: 10,
         personnelId: null,
         name: null,
-        contactInfo: null, // (新增)
+        contactInfo: null,
+        personnelType: null, // (新增)
         certificateExpiryDate: null,
         skillScore: null,
         vendorId: null,
@@ -283,7 +291,7 @@ export default {
         id: null,
         personnelId: null,
         name: null,
-        contactInfo: null, // (新增)
+        contactInfo: null,
         personnelType: null,
         certificateInfo: null,
         certificatePhotoUrl: null,
@@ -358,7 +366,7 @@ export default {
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
-	  rowDevVendorsIndex({ row, rowIndex }) {
+    rowDevVendorsIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
     },
     handleAddDevVendors() {
